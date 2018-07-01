@@ -1,0 +1,17 @@
+﻿  main.cpp
+c:\projekty\project-fdm-3d\project-fdm-3d\shader_m.h(67): warning C4101: 'infoLog': unreferenced local variable
+c:\projekty\project-fdm-3d\project-fdm-3d\shader_m.h(66): warning C4101: 'success': unreferenced local variable
+main.cpp(225): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+main.cpp(293): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+main.cpp(319): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+main.cpp(320): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+main.cpp(324): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+main.cpp(325): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+main.cpp(326): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+main.cpp(327): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+main.cpp(354): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+main.obj : error LNK2001: unresolved external symbol _stbi_load
+main.obj : error LNK2001: unresolved external symbol _stbi_image_free
+main.obj : error LNK2001: unresolved external symbol _stbi_set_flip_vertically_on_load
+C:\Projekty\Project-FDM-3D\Release\Project-FDM-3D.exe : fatal error LNK1120: 3 unresolved externals
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppCommon.targets(654,5): error MSB6006: "link.exe" exited with code 1120.

@@ -1,0 +1,5 @@
+﻿  RenderVertex.cpp
+  RenderRectangle.cpp
+  Generating Code...
+c:\projekty\project-fdm-3d\project-fdm-3d\rendervertex.cpp(13): warning C4172: returning address of local variable or temporary: tab
+  Project-FDM-3D.vcxproj -> C:\Projekty\Project-FDM-3D\Debug\Project-FDM-3D.exe
