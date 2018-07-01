@@ -1,10 +1,10 @@
 #include "App.h"
 
-App::App() {
-}
+App::App() {}
 void App::loop() {
 	while (_renderer.isWindowOpen()) {
-		_renderer.update();
+		_scene.update();
+		_renderer.draw(_scene.getRenderables());
 	}
 }
 App::~App() {}

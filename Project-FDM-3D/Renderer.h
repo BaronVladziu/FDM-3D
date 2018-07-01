@@ -26,12 +26,12 @@ class Renderer
 	Camera * camera;
 
 	static void framebuffer_size_callback(GLFWwindow * window, int width, int height);
-	void generateVertices();
+	void generateVertices(const std::list<Renderable *> & renderables);
 	void drawVertices(const glm::vec3 & translation, float angle, const glm::vec3 & axis, unsigned int numberOfVertices);
 
 public:
 	Renderer();
 	bool isWindowOpen();
-	void update();
+	void draw(const std::list<Renderable *> & renderables);
 	~Renderer();
 };

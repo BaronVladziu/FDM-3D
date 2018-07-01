@@ -151,6 +151,7 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RenderRectangle.cpp" />
     <ClCompile Include="RenderVertex.cpp" />
+    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Vector3f.cpp" />
   </ItemGroup>
@@ -162,6 +163,7 @@
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RenderRectangle.h" />
     <ClInclude Include="RenderVertex.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Tab.h" />
     <ClInclude Include="Vector3f.h" />

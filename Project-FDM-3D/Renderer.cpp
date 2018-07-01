@@ -1,6 +1,9 @@
 #include "header.h"
 #include "Renderer.h"
 #include "Camera.h"
+#include "Renderable.h"
+#include "Tab.h"
+#include "RenderVertex.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -54,15 +57,20 @@ Renderer::Renderer()
 	//create camera
 	camera = new Camera(window);
 
-	//generate vertices
-	generateVertices();
+	// create & bind buffers
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+
+
 	// position attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	// texture coord attribute
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
-
 
 	// load and create a texture
 	glGenTextures(1, &texture);
@@ -92,64 +100,32 @@ Renderer::Renderer()
 	ourShader->use();
 	ourShader->setInt("texture", 0);
 }
-void Renderer::generateVertices() {
+void Renderer::generateVertices(const std::list<Renderable *> & renderables) {
 	// set up vertex data (and buffer(s)) and configure vertex attributes
-	float vertices[] = {
-		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-		0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+	int verticesDataLength = 0;
+	for (const Renderable * el : renderables) {
+		verticesDataLength += 5 * el->getNumberOfRenderVertices();
+	}
+	float * vertices = new float[verticesDataLength];
 
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-		0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	int actDataIndex = 0;
+	for (const Renderable * el : renderables) {
+		const Tab<RenderVertex> tab = el->generateRenderVertices();
+		for (int vertex = 0; vertex < tab.getSize(); vertex++) {
+			float * vertexValues = tab[vertex].getData();
+			for (int number = 0; number < 5; number++) {
+				vertices[actDataIndex++] = vertexValues[number];
+			}
+		}
+	}
 
-		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-		0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-	};
-
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-
-	glBindVertexArray(VAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, verticesDataLength*sizeof(float), vertices, GL_STATIC_DRAW);
+	delete[] vertices;
 }
 bool Renderer::isWindowOpen() {
 	return !glfwWindowShouldClose(window);
 }
-void Renderer::update() {
+void Renderer::draw(const std::list<Renderable *> & renderables) {
 	// per-frame time logic
 	float currentFrame = glfwGetTime();
 	deltaTime = currentFrame - lastFrame;
@@ -157,6 +133,9 @@ void Renderer::update() {
 
 	// input
 	camera->processInput(window, deltaTime);
+
+	// generate vertices
+	generateVertices(renderables);
 
 	// render
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
