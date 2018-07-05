@@ -1,6 +1,10 @@
 #pragma once
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
 #include <list>
+#include <vector>
 #include <memory>
 
 class App;

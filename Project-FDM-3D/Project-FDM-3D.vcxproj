@@ -148,6 +148,8 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="ModelPoint.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RenderRectangle.cpp" />
     <ClCompile Include="RenderVertex.cpp" />
@@ -159,6 +161,8 @@
     <ClInclude Include="App.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="header.h" />
+    <ClInclude Include="Model.h" />
+    <ClInclude Include="ModelPoint.h" />
     <ClInclude Include="Renderable.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RenderRectangle.h" />
