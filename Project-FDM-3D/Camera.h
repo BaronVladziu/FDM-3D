@@ -3,28 +3,31 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "E_Direction6.h"
 
 class Camera
 {
-	static glm::vec3 cameraPos;
-	static glm::vec3 cameraFront;
-	static glm::vec3 cameraUp;
-	static bool firstMouse;
-	static float yaw;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
-	static float pitch;
-	static float lastX;
-	static float lastY;
-	static float fov;
-
-	static void mouse_callback(GLFWwindow * window, double xpos, double ypos);
-	static void scroll_callback(GLFWwindow * window, double xoffset, double yoffset);
+	glm::vec3 _cameraPos;
+	glm::vec3 _cameraFront;
+	glm::vec3 _cameraUp;
+	bool _firstMouse;
+	float _yaw;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
+	float _pitch;
+	float _lastX;
+	float _lastY;
+	float _fov;
+	float _minFov;
+	float _maxFov;
 
 public:
 	Camera(GLFWwindow * window);
-	static void processInput(GLFWwindow * window, float deltaTime);
+	void move(E_Direction6 direction, float deltaTime);
+	void turn(double xpos, double ypos);
+	void zoom(double offset);
 	const glm::vec3 & getPos() const;
 	const glm::vec3 & getFront() const;
 	const glm::vec3 & getUp() const;
 	float getFov() const;
+	void setFov(float fov);
 	~Camera();
 };

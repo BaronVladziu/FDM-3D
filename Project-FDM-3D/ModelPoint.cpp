@@ -15,4 +15,7 @@ const Vector3f & ModelPoint::getPosition() const {
 void ModelPoint::setPosition(const Vector3f & position) {
 	_position = position;
 }
+void ModelPoint::move(const Vector3f & position) {
+	_position += position;
+}
 ModelPoint::~ModelPoint() {}

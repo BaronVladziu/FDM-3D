@@ -1,99 +1,100 @@
 #include "Camera.h"
 
-glm::vec3 Camera::cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-glm::vec3 Camera::cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 Camera::cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
-bool Camera::firstMouse = true;
-float Camera::yaw = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
-float Camera::pitch = 0.0f;
-float Camera::lastX = 800.0f / 2.0;
-float Camera::lastY = 600.0 / 2.0;
-float Camera::fov = 45.0f;
-
 // glfw: whenever the mouse moves, this callback is called
-void Camera::mouse_callback(GLFWwindow* window, double xpos, double ypos) {
-	if (firstMouse)
+void Camera::turn(double xpos, double ypos) {
+	if (_firstMouse)
 	{
-		lastX = xpos;
-		lastY = ypos;
-		firstMouse = false;
+		_lastX = xpos;
+		_lastY = ypos;
+		_firstMouse = false;
 	}
 
-	float xoffset = xpos - lastX;
-	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-	lastX = xpos;
-	lastY = ypos;
+	float xoffset = xpos - _lastX;
+	float yoffset = _lastY - ypos; // reversed since y-coordinates go from bottom to top
+	_lastX = xpos;
+	_lastY = ypos;
 
 	float sensitivity = 0.1f; // change this value to your liking
 	xoffset *= sensitivity;
 	yoffset *= sensitivity;
 
-	yaw += xoffset;
-	pitch += yoffset;
+	_yaw += xoffset;
+	_pitch += yoffset;
 
 	// make sure that when pitch is out of bounds, screen doesn't get flipped
-	if (pitch > 89.0f)
-		pitch = 89.0f;
-	if (pitch < -89.0f)
-		pitch = -89.0f;
+	if (_pitch > 89.0f)
+		_pitch = 89.0f;
+	if (_pitch < -89.0f)
+		_pitch = -89.0f;
 
 	glm::vec3 front;
-	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-	front.y = sin(glm::radians(pitch));
-	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-	cameraFront = glm::normalize(front);
+	front.x = cos(glm::radians(_yaw)) * cos(glm::radians(_pitch));
+	front.y = sin(glm::radians(_pitch));
+	front.z = sin(glm::radians(_yaw)) * cos(glm::radians(_pitch));
+	_cameraFront = glm::normalize(front);
 }
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
-void Camera::scroll_callback(GLFWwindow * window, double xoffset, double yoffset) {
-	if (fov >= 1.0f && fov <= 45.0f)
-		fov -= yoffset;
-	if (fov <= 1.0f)
-		fov = 1.0f;
-	if (fov >= 45.0f)
-		fov = 45.0f;
+void Camera::zoom(double offset) {
+	if (_fov >= _minFov && _fov <= _maxFov)
+		_fov -= offset * 5;
+	if (_fov <= _minFov)
+		_fov = _minFov;
+	if (_fov >= _maxFov)
+		_fov = _maxFov;
 }
 
-Camera::Camera(GLFWwindow * window) {
-	cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-	cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-	cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+Camera::Camera(GLFWwindow * window)
+	: _minFov(5.f), _maxFov(80)
+{
+	_cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+	_cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+	_cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-	firstMouse = true;
-	yaw = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
-	pitch = 0.0f;
-	lastX = 800.0f / 2.0;
-	lastY = 600.0 / 2.0;
-	fov = 45.0f;
-
-	glfwSetCursorPosCallback(window, Camera::mouse_callback);
-	glfwSetScrollCallback(window, Camera::scroll_callback);
+	_firstMouse = true;
+	_yaw = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
+	_pitch = 0.0f;
+	_lastX = 800.0f / 2.0;
+	_lastY = 600.0 / 2.0;
+	_fov = 45.0f;
 }
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-void Camera::processInput(GLFWwindow *window, float deltaTime) {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, true);
-
+void Camera::move(E_Direction6 direction, float deltaTime) {
 	float cameraSpeed = 2.5 * deltaTime;
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		cameraPos += cameraSpeed * cameraFront;
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		cameraPos -= cameraSpeed * cameraFront;
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	switch (direction) {
+	case E_Direction6::Front:
+		_cameraPos += cameraSpeed * _cameraFront;
+		break;
+	case E_Direction6::Right:
+		_cameraPos += glm::normalize(glm::cross(_cameraFront, _cameraUp)) * cameraSpeed;
+		break;
+	case E_Direction6::Back:
+		_cameraPos -= cameraSpeed * _cameraFront;
+		break;
+	case E_Direction6::Left:
+		_cameraPos -= glm::normalize(glm::cross(_cameraFront, _cameraUp)) * cameraSpeed;
+		break;
+	case E_Direction6::Up:
+		_cameraPos += cameraSpeed * _cameraUp;
+		break;
+	case E_Direction6::Down:
+		_cameraPos -= cameraSpeed * _cameraUp;
+		break;
+	}
 }
 const glm::vec3 & Camera::getPos() const {
-	return cameraPos;
+	return _cameraPos;
 }
 const glm::vec3 & Camera::getFront() const {
-	return cameraFront;
+	return _cameraFront;
 }
 const glm::vec3 & Camera::getUp() const {
-	return cameraUp;
+	return _cameraUp;
 }
 float Camera::getFov() const {
-	return fov;
+	return _fov;
+}
+void Camera::setFov(float fov) {
+	_fov = fov;
+	_maxFov = fov;
 }
 Camera::~Camera() {}

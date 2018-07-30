@@ -13,5 +13,6 @@ public:
 	void removeRectangle(const RenderRectangle * rect);
 	const Vector3f & getPosition() const;
 	void setPosition(const Vector3f & position);
+	void move(const Vector3f & position);
 	~ModelPoint();
 };

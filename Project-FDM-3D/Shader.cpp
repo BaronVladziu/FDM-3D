@@ -1,15 +1,6 @@
 #include "header.h"
 #include "Shader.h"
 
-#include <glad/glad.h>
-#include <glm/glm.hpp>
-
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <iostream>
-
-
 Shader::Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath)
 {
 	// 1. retrieve the vertex/fragment source code from filePath

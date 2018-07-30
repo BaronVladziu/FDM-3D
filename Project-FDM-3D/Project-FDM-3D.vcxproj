@@ -145,27 +145,46 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\OpenGL\glad.c" />
+    <ClCompile Include="Action.cpp" />
+    <ClCompile Include="ActionManager.cpp" />
     <ClCompile Include="App.cpp" />
+    <ClCompile Include="Axis.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelPoint.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RenderRectangle.cpp" />
+    <ClCompile Include="RenderTarget.cpp" />
+    <ClCompile Include="RenderTriangle.cpp" />
     <ClCompile Include="RenderVertex.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Vector3f.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Action.h" />
+    <ClInclude Include="ActionManager.h" />
     <ClInclude Include="App.h" />
+    <ClInclude Include="Axis.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="E_ActionType.h" />
+    <ClInclude Include="E_Axis.h" />
+    <ClInclude Include="E_Direction4.h" />
+    <ClInclude Include="E_Direction6.h" />
+    <ClInclude Include="E_InputAction.h" />
+    <ClInclude Include="E_ObjectType.h" />
+    <ClInclude Include="E_TextureID.h" />
     <ClInclude Include="header.h" />
+    <ClInclude Include="InputManager.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelPoint.h" />
     <ClInclude Include="Renderable.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RenderRectangle.h" />
+    <ClInclude Include="RenderTarget.h" />
+    <ClInclude Include="RenderTriangle.h" />
     <ClInclude Include="RenderVertex.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />

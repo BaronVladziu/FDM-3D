@@ -1,17 +1,7 @@
-#include "header.h"
 #include "RenderRectangle.h"
-#include "Tab.h"
-#include "RenderVertex.h"
 
-RenderRectangle::RenderRectangle(const std::vector<ModelPoint*> & modelPoints)
-	: _modelPoints(modelPoints), _vertices(_NUMBER_OF_VERTICES)
-{
-	for (int i = 0; i < _NUMBER_OF_VERTICES; i++) {
-		_vertices[i] = -1;
-	}
-}
-RenderRectangle::RenderRectangle(const std::vector<ModelPoint*> & modelPoints, int a, int b, int c, int d)
-	: _modelPoints(modelPoints), _vertices(_NUMBER_OF_VERTICES)
+RenderRectangle::RenderRectangle(ModelPoint * a, ModelPoint * b, ModelPoint * c, ModelPoint * d, E_TextureID texture)
+	: _vertices(_NUMBER_OF_VERTICES), _texture(texture)
 {
 	_vertices[0] = a;
 	_vertices[1] = b;
@@ -19,10 +9,10 @@ RenderRectangle::RenderRectangle(const std::vector<ModelPoint*> & modelPoints, i
 	_vertices[3] = d;
 }
 const Vector3f & RenderRectangle::getVertex(unsigned int i) const {
-	return _modelPoints[_vertices[i]]->getPosition();
+	return _vertices[i]->getPosition();
 }
-void RenderRectangle::setVertex(unsigned int i, int vertexID) {
-	_vertices[i] = vertexID;
+void RenderRectangle::setVertex(unsigned int i, ModelPoint * vertex) {
+	_vertices[i] = vertex;
 }
 Tab<RenderVertex> RenderRectangle::generateRenderVertices() const {
 	Tab<RenderVertex> _renderVertices(_NUMBER_OF_RENDER_VERTICES);
@@ -40,7 +30,16 @@ unsigned int RenderRectangle::getNumberOfVertices() const {
 unsigned int RenderRectangle::getNumberOfRenderVertices() const {
 	return _NUMBER_OF_RENDER_VERTICES;
 }
-const Tab<int> & RenderRectangle::getVerticeIDs() const {
+const Tab<ModelPoint *> & RenderRectangle::getVertices() const {
 	return _vertices;
+}
+Vector3f RenderRectangle::getPosition() const {
+	return (_vertices[0]->getPosition() + _vertices[1]->getPosition() + _vertices[2]->getPosition() + _vertices[3]->getPosition()) / 4;
+}
+E_TextureID RenderRectangle::getTextureID() const {
+	return _texture;
+}
+void RenderRectangle::setTextureID(E_TextureID texID) {
+	_texture = texID;
 }
 RenderRectangle::~RenderRectangle() {}
