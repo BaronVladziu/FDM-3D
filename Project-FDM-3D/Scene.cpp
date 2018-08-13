@@ -46,11 +46,91 @@ void Scene::setActiveMode(E_ObjectType newMode) {
 		break;
 	}
 }
-void Scene::addObject() {
-	std::cout << "Error: Unsupported action!" << std::endl; //TODO
+void Scene::addPoint(const Vector3f & position) {
+	Model * point = new Model();
+	point->loadModelFromFile("Models/point");
+	point->setPosition(position);
+	point->setScale(Vector3f(0.02f, 0.02f, 0.02f));
+	point->setIfAutoscaled(true);
+	_map.addPoint(position);
+	_pointModels.push_back(point);
+	_pointMarks.push_back(false);
 }
-void Scene::deleteObject() {
-	std::cout << "Error: Unsupported action!" << std::endl; //TODO
+void Scene::addPlane(const std::list<bool> & marks) {
+	int counter = 0;
+	std::list<ModelPoint *>::iterator it = _map.getPointsBegin();
+	for (bool mark : marks) {
+		if (mark == true) {
+			counter++;
+		}
+	}
+	Tab<ModelPoint *> tab(counter);
+	counter = 0;
+	it = _map.getPointsBegin();
+	for (bool mark : marks) {
+		if (mark == true) {
+			tab[counter] = *it;
+			counter++;
+		}
+		it++;
+	}
+	addPlane(tab);
+}
+void Scene::addPlane(const Tab<ModelPoint *> & points) {
+	switch (points.getSize()) {
+	case 3:
+		_map.addTriangle(points[0], points[1], points[2], E_TextureID::Plane);
+		break;
+	case 4:
+		_map.addRectangle(points[0], points[1], points[2], points[3], E_TextureID::Plane);
+		break;
+	default:
+		std::cout << "Error: Unsupported plane type!" << std::endl;
+		return;
+	}
+	_planeMarks.push_back(false);
+}
+void Scene::addSpeaker(const Vector3f & position) {
+	Model * speaker = new Model();
+	speaker->loadModelFromFile("Models/speaker");
+	speaker->setPosition(position);
+	speaker->setScale(Vector3f(0.02f, 0.02f, 0.02f));
+	speaker->setIfAutoscaled(true);
+	_speakerMap.addPoint(position);
+	_speakerModels.push_back(speaker);
+	_speakerMarks.push_back(false);
+}
+void Scene::deleteObject(const std::list<bool> & marks) {
+	switch (_actualMode) {
+	case E_ObjectType::Point:
+		std::list<ModelPoint *>::iterator pointIt = _map.getPointsBegin();
+		std::list<Model *>::iterator modelIt = _pointModels.begin();
+		std::list<bool>::iterator markIt = _pointMarks.begin();
+		while (markIt != _pointMarks.end()) {
+			if (*markIt == true) {
+				_map.deletePoint();
+
+				Model * point = new Model();
+				point->loadModelFromFile("Models/point");
+				point->setPosition(position);
+				point->setScale(Vector3f(0.02f, 0.02f, 0.02f));
+				point->setIfAutoscaled(true);
+				_map.addPoint(position);
+				_pointModels.push_back(point);
+				_pointMarks.push_back(false);
+			}
+		}
+		break;
+	case E_ObjectType::Plane:
+		
+		break;
+	case E_ObjectType::Speaker:
+
+		break;
+	default:
+		std::cout << "Error: Unsupported mode!" << std::endl;
+		break;
+	}
 }
 void Scene::moveObject(const Vector3f & vector) {
 	switch (_actualMode) {
@@ -221,8 +301,31 @@ void Scene::markUnmarkAll() {
 		break;
 	}
 	case E_ObjectType::Plane:
-		std::cout << "Error: Marking planes not supported yet!" << std::endl; //TODO
+	{
+		std::list<Renderable *>::iterator previousTargetPlane = _targetPlane;
+		_targetPlane = _map.getPlanesBegin();
+		std::list<bool>::iterator previousTargetPlaneMark = _targetPlaneMark;
+		_targetPlaneMark = _planeMarks.begin();
+		if (_numberOfPlaneMarks == _map.getNumberOFPlanes()) {
+			while (_targetPlaneMark != _planeMarks.end()) {
+				markUnmarkTarget();
+				_targetPlane++;
+				_targetPlaneMark++;
+			}
+		}
+		else {
+			while (_targetPlaneMark != _planeMarks.end()) {
+				if (*_targetPlaneMark == false) {
+					markUnmarkTarget();
+				}
+				_targetPlane++;
+				_targetPlaneMark++;
+			}
+		}
+		_targetPlane = previousTargetPlane;
+		_targetPlaneMark = previousTargetPlaneMark;
 		break;
+	}
 	case E_ObjectType::Speaker:
 	{
 		std::list<Model *>::iterator previousTargetSpeakerModel = _targetSpeakerModel;
@@ -319,8 +422,24 @@ void Scene::markObjects(const std::list<bool> & marks) {
 		break;
 	}
 	case E_ObjectType::Plane:
-		std::cout << "Error: Marking planes not supported yet!" << std::endl; //TODO
+	{
+		std::list<bool>::const_iterator orderMarkIt = marks.begin();
+		std::list<Renderable *>::iterator previousTargetPlane = _targetPlane;
+		_targetPlane = _map.getPlanesBegin();
+		std::list<bool>::iterator previousTargetPlaneMark = _targetPlaneMark;
+		_targetPlaneMark = _planeMarks.begin();
+		while (orderMarkIt != marks.end()) {
+			if (*_targetPlaneMark != *orderMarkIt) {
+				markUnmarkTarget();
+			}
+			orderMarkIt++;
+			_targetPlane++;
+			_targetPlaneMark++;
+		}
+		_targetPlane = previousTargetPlane;
+		_targetPlaneMark = previousTargetPlaneMark;
 		break;
+	}
 	case E_ObjectType::Speaker:
 	{
 		std::list<bool>::const_iterator orderMarkIt = marks.begin();
@@ -415,7 +534,17 @@ bool Scene::isActionAvaliable(const E_InputAction inputAction) { //TODO
 	case E_InputAction::SetSpeakerMode:
 		return (_actualMode != E_ObjectType::Speaker);
 	case E_InputAction::AddObject:
-		return true;
+		switch (_actualMode) {
+		case E_ObjectType::Point:
+			return (_targetPoint != _map.getPointsEnd());
+		case E_ObjectType::Plane:
+			return (_numberOfPointMarks > 2 && _numberOfPointMarks < 5);
+		case E_ObjectType::Speaker:
+			return (_targetSpeaker != _speakerMap.getPointsEnd());
+		default:
+			std::cout << "Error: Unsupported mode!" << std::endl;
+			return false;
+		}
 	case E_InputAction::DeleteObject:
 		return isObjectAlive();
 	case E_InputAction::MoveFurther:
@@ -482,8 +611,23 @@ void Scene::sendAction(const E_InputAction inputAction) {
 			_speakerMarks));
 		return;
 	case E_InputAction::AddObject:
-		std::cout << "Error: Unsupported action!" << std::endl; //TODO
-		return;
+		switch (_actualMode) {
+		case E_ObjectType::Point:
+			_actionManager->executeAction(Action(E_ActionType::AddPoint,
+				(*_targetPoint)->getPosition()));
+			return;
+		case E_ObjectType::Plane:
+			_actionManager->executeAction(Action(E_ActionType::AddPlane,
+				_pointMarks));
+			return;
+		case E_ObjectType::Speaker:
+			_actionManager->executeAction(Action(E_ActionType::AddSpeaker,
+				(*_targetSpeaker)->getPosition()));
+			return;
+		default:
+			std::cout << "Error: Unsupported mode!" << std::endl;
+			return;
+		}
 	case E_InputAction::DeleteObject:
 		std::cout << "Error: Unsupported action!" << std::endl; //TODO
 		return;
@@ -591,8 +735,7 @@ Scene::Scene()
 		_pointModels.push_back(point);
 		_pointMarks.push_back(false);
 	}
-
-	for (int i = 0; i < _map.getNumberOFPlanes(); i++) {
+	for (const Renderable * mapPlane : _map.getPlanes()) {
 		_planeMarks.push_back(false);
 	}
 

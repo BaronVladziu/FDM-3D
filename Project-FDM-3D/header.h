@@ -29,9 +29,9 @@ class Tab;
 
 /*
 TODO:
+- adding should target new object
 - merge move actions
 - ask before exit
-- selecting textures
 - GUI
 - creating points
 - deleting points
@@ -45,5 +45,4 @@ TODO:
 - displaying results
 - saving and loading results
 - fullscreen
-- sorting transparent planes!
 */

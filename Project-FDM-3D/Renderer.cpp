@@ -213,18 +213,18 @@ void Renderer::draw(const std::list<const Model *> & models) {
 			glm::vec3 normalizedPitchAxis = glm::normalize(pitchAxis);
 			float pitch = -glm::degrees(glm::acos(glm::dot(normalizedPositionFromCamera, normalizedFlatPositionFromCamera)));
 			for (Renderable * renderable : modelPlanes) {
-				renderTargets.push_back(RenderTarget(renderable, position, yaw, pitch, normalizedPitchAxis, scale));
+				renderTargets.push_back(RenderTarget(renderable, position, yaw, pitch, normalizedPitchAxis, scale, _camera->getPos()));
 			}
 		}
 		else {
 			glm::vec3 rotationAxis = convertVector(model->getRotationAxis());
 			for (Renderable * renderable : modelPlanes) {
-				renderTargets.push_back(RenderTarget(renderable, position, rotation, rotationAxis, scale));
+				renderTargets.push_back(RenderTarget(renderable, position, rotation, rotationAxis, scale, _camera->getPos()));
 			}
 		}
 	}
 	//Sorting to make transparency work
-	//TODO
+	renderTargets.sort([](const RenderTarget & a, const RenderTarget & b) { return a.getDistanceFromCamera() > b.getDistanceFromCamera(); });
 	//Drawing RenderTargets
 	for (const RenderTarget & target : renderTargets) {
 		generateVertices(target);

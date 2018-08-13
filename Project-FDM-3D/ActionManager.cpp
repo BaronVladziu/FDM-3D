@@ -18,7 +18,7 @@ void ActionManager::reverseActiveMode() {
 }
 void ActionManager::addPoint() {
 	std::cout << "New point added." << " Position: X=" << _actualAction->getVector().x << " Position Y=" << _actualAction->getVector().y << " Position: Z=" << _actualAction->getVector().z << std::endl;
-	_scene.addObject();
+	_scene.addPoint(_actualAction->getVector());
 }
 void ActionManager::deletePoint() {
 	std::cout << "Point deleted." << std::endl;
@@ -26,7 +26,7 @@ void ActionManager::deletePoint() {
 }
 void ActionManager::addPlane() {
 	std::cout << "New plane added." << std::endl;
-	_scene.addObject();
+	_scene.addPlane(_actualAction->getObjectMarks());
 }
 void ActionManager::deletePlane() {
 	std::cout << "Plane deleted." << std::endl;
@@ -34,7 +34,7 @@ void ActionManager::deletePlane() {
 }
 void ActionManager::addSpeaker() {
 	std::cout << "New speaker added." << " Position: X=" << _actualAction->getVector().x << " Position Y=" << _actualAction->getVector().y << " Position: Z=" << _actualAction->getVector().z << std::endl;
-	_scene.addObject();
+	_scene.addSpeaker(_actualAction->getVector());
 }
 void ActionManager::deleteSpeaker() {
 	std::cout << "Speaker deleted." << std::endl;
@@ -151,10 +151,10 @@ void ActionManager::reverseActualAction() {
 		reverseObjectMove();
 		break;
 	case E_ActionType::TargetNext: //enum + ID
-		targetPrevious(); //TODO
+		targetPrevious();
 		break;
 	case E_ActionType::TargetPrevious: //enum + ID
-		targetNext(); //TODO
+		targetNext();
 		break;
 	case E_ActionType::MarkAll: //IDs
 		reverseMarkAll();

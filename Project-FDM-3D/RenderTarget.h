@@ -14,10 +14,13 @@ class RenderTarget
 	const float _pitch;
 	const glm::vec3 _axis;
 	const glm::vec3 _scale;
+	float _distanceFromCamera;
+
+	glm::vec3 convertVector(const Vector3f & v) const;
 
 public:
-	RenderTarget(Renderable * renderable, glm::vec3 modelPosition, float yaw, float pitch, glm::vec3 normalizedPitchAxis, glm::vec3 scale);
-	RenderTarget(Renderable * renderable, glm::vec3 modelPosition, float rotation, glm::vec3 rotationAxis, glm::vec3 scale);
+	RenderTarget(Renderable * renderable, glm::vec3 modelPosition, float yaw, float pitch, glm::vec3 normalizedPitchAxis, glm::vec3 scale, glm::vec3 cameraPosition);
+	RenderTarget(Renderable * renderable, glm::vec3 modelPosition, float rotation, glm::vec3 rotationAxis, glm::vec3 scale, glm::vec3 cameraPosition);
 	unsigned int getNumberOfVertices() const;
 	bool getIfAutorotated() const;
 	const glm::vec3 & getModelPosition() const;
@@ -28,5 +31,6 @@ public:
 	const glm::vec3 & getScale() const;
 	const Tab<RenderVertex> & generateRenderVertices() const;
 	const E_TextureID getTexture() const;
+	const float getDistanceFromCamera() const;
 	~RenderTarget();
 };

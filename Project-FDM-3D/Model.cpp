@@ -87,6 +87,8 @@ void Model::saveModelToFile(const std::string & fileName) const {
 	outfile.close();
 }
 void Model::loadModelFromFile(const std::string & fileName) {
+	_points.clear();
+	_rectangles.clear();
 	std::ifstream infile(fileName + ".bvm");
 	std::string line;
 	std::string word;

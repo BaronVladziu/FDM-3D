@@ -14,7 +14,7 @@ class Scene
 
 	friend class ActionManager;
 	ActionManager * _actionManager;
-	
+
 
 	Model _map;
 	Model _speakerMap;
@@ -48,8 +48,11 @@ class Scene
 
 	void setActiveAxis(const Axis & newAxis);
 	void setActiveMode(E_ObjectType newMode);
-	void addObject();
-	void deleteObject();
+	void addPoint(const Vector3f & position);
+	void addPlane(const std::list<bool> & marks);
+	void addPlane(const Tab<ModelPoint *> & points);
+	void addSpeaker(const Vector3f & position);
+	void deleteObject(const std::list<bool> & marks);
 	void moveObject(const Vector3f & vector);
 	void targetNext();
 	void targetPrevious();
