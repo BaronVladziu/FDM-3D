@@ -150,6 +150,60 @@ App.cpp.s:
 	$(MAKE) -f CMakeFiles/vulkan-fdm.dir/build.make CMakeFiles/vulkan-fdm.dir/App.cpp.s
 .PHONY : App.cpp.s
 
+Map.o: Map.cpp.o
+
+.PHONY : Map.o
+
+# target to build an object file
+Map.cpp.o:
+	$(MAKE) -f CMakeFiles/vulkan-fdm.dir/build.make CMakeFiles/vulkan-fdm.dir/Map.cpp.o
+.PHONY : Map.cpp.o
+
+Map.i: Map.cpp.i
+
+.PHONY : Map.i
+
+# target to preprocess a source file
+Map.cpp.i:
+	$(MAKE) -f CMakeFiles/vulkan-fdm.dir/build.make CMakeFiles/vulkan-fdm.dir/Map.cpp.i
+.PHONY : Map.cpp.i
+
+Map.s: Map.cpp.s
+
+.PHONY : Map.s
+
+# target to generate assembly for a file
+Map.cpp.s:
+	$(MAKE) -f CMakeFiles/vulkan-fdm.dir/build.make CMakeFiles/vulkan-fdm.dir/Map.cpp.s
+.PHONY : Map.cpp.s
+
+MapLoader.o: MapLoader.cpp.o
+
+.PHONY : MapLoader.o
+
+# target to build an object file
+MapLoader.cpp.o:
+	$(MAKE) -f CMakeFiles/vulkan-fdm.dir/build.make CMakeFiles/vulkan-fdm.dir/MapLoader.cpp.o
+.PHONY : MapLoader.cpp.o
+
+MapLoader.i: MapLoader.cpp.i
+
+.PHONY : MapLoader.i
+
+# target to preprocess a source file
+MapLoader.cpp.i:
+	$(MAKE) -f CMakeFiles/vulkan-fdm.dir/build.make CMakeFiles/vulkan-fdm.dir/MapLoader.cpp.i
+.PHONY : MapLoader.cpp.i
+
+MapLoader.s: MapLoader.cpp.s
+
+.PHONY : MapLoader.s
+
+# target to generate assembly for a file
+MapLoader.cpp.s:
+	$(MAKE) -f CMakeFiles/vulkan-fdm.dir/build.make CMakeFiles/vulkan-fdm.dir/MapLoader.cpp.s
+.PHONY : MapLoader.cpp.s
+
 RenderTriangle.o: RenderTriangle.cpp.o
 
 .PHONY : RenderTriangle.o
@@ -270,6 +324,12 @@ help:
 	@echo "... App.o"
 	@echo "... App.i"
 	@echo "... App.s"
+	@echo "... Map.o"
+	@echo "... Map.i"
+	@echo "... Map.s"
+	@echo "... MapLoader.o"
+	@echo "... MapLoader.i"
+	@echo "... MapLoader.s"
 	@echo "... RenderTriangle.o"
 	@echo "... RenderTriangle.i"
 	@echo "... RenderTriangle.s"

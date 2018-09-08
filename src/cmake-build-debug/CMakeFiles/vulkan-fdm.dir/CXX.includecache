@@ -36,17 +36,21 @@ intrin.h
 arm_neon.h
 -
 
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/App.cpp
-App.h
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/App.h
-RenderVertex.h
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/RenderVertex.h
-
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/App.h
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Map.h
 header.h
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/header.h
-Renderer.h
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Renderer.h
+RenderTriangle.h
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/RenderTriangle.h
+
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapLoader.cpp
+MapLoader.h
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapLoader.h
+
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapLoader.h
+header.h
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/header.h
+Map.h
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Map.h
 
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/RenderTriangle.h
 header.h
@@ -97,12 +101,6 @@ fstream
 -
 vector
 -
-
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/main.cpp
-stdexcept
+string
 -
-iostream
--
-App.h
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/App.h
 

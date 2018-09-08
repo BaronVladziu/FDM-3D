@@ -8,5 +8,6 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <string>
 
 #endif //VULKAN_FDM_HEADER_H

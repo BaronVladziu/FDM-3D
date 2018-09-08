@@ -23,3 +23,18 @@ float RenderVertex::getTexX() const {
 float RenderVertex::getTexY() const {
     return _texY;
 }
+void RenderVertex::setX(float x) {
+    _posX = x;
+}
+void RenderVertex::setY(float y) {
+    _posY = y;
+}
+void RenderVertex::setZ(float z) {
+    _posZ = z;
+}
+void RenderVertex::setTexX(float textureX) {
+    _texX = textureX;
+}
+void RenderVertex::setTexY(float textureY) {
+    _texY = textureY;
+}

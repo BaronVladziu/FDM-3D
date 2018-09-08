@@ -94,6 +94,18 @@
 		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/App.h">
 			<Option target="vulkan-fdm"/>
 		</Unit>
+		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Map.cpp">
+			<Option target="vulkan-fdm"/>
+		</Unit>
+		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Map.h">
+			<Option target="vulkan-fdm"/>
+		</Unit>
+		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapLoader.cpp">
+			<Option target="vulkan-fdm"/>
+		</Unit>
+		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapLoader.h">
+			<Option target="vulkan-fdm"/>
+		</Unit>
 		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/RenderTriangle.cpp">
 			<Option target="vulkan-fdm"/>
 		</Unit>

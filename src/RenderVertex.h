@@ -17,12 +17,18 @@ class RenderVertex {
     float _texY;
 
 public:
+    RenderVertex() = default;
     RenderVertex(float x, float y, float z, float textureX, float textureY);
     float getX() const;
     float getY() const;
     float getZ() const;
     float getTexX() const;
     float getTexY() const;
+    void setX(float x);
+    void setY(float y);
+    void setZ(float z);
+    void setTexX(float textureX);
+    void setTexY(float textureY);
 
 };
 

@@ -3,10 +3,25 @@
 
 CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../App.cpp
 CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../App.h
+CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../Map.h
+CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../MapLoader.h
 CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../RenderTriangle.h
 CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../RenderVertex.h
 CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../Renderer.h
 CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../header.h
+
+CMakeFiles/vulkan-fdm.dir/Map.cpp.o: ../Map.cpp
+CMakeFiles/vulkan-fdm.dir/Map.cpp.o: ../Map.h
+CMakeFiles/vulkan-fdm.dir/Map.cpp.o: ../RenderTriangle.h
+CMakeFiles/vulkan-fdm.dir/Map.cpp.o: ../RenderVertex.h
+CMakeFiles/vulkan-fdm.dir/Map.cpp.o: ../header.h
+
+CMakeFiles/vulkan-fdm.dir/MapLoader.cpp.o: ../Map.h
+CMakeFiles/vulkan-fdm.dir/MapLoader.cpp.o: ../MapLoader.cpp
+CMakeFiles/vulkan-fdm.dir/MapLoader.cpp.o: ../MapLoader.h
+CMakeFiles/vulkan-fdm.dir/MapLoader.cpp.o: ../RenderTriangle.h
+CMakeFiles/vulkan-fdm.dir/MapLoader.cpp.o: ../RenderVertex.h
+CMakeFiles/vulkan-fdm.dir/MapLoader.cpp.o: ../header.h
 
 CMakeFiles/vulkan-fdm.dir/RenderTriangle.cpp.o: ../RenderTriangle.cpp
 CMakeFiles/vulkan-fdm.dir/RenderTriangle.cpp.o: ../RenderTriangle.h

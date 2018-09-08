@@ -4,9 +4,24 @@
 CMakeFiles/vulkan-fdm.dir/App.cpp.o
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/App.cpp
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/App.h
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Map.h
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapLoader.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/RenderTriangle.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/RenderVertex.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Renderer.h
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/header.h
+CMakeFiles/vulkan-fdm.dir/Map.cpp.o
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Map.cpp
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Map.h
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/RenderTriangle.h
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/RenderVertex.h
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/header.h
+CMakeFiles/vulkan-fdm.dir/MapLoader.cpp.o
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Map.h
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapLoader.cpp
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapLoader.h
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/RenderTriangle.h
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/RenderVertex.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/header.h
 CMakeFiles/vulkan-fdm.dir/RenderTriangle.cpp.o
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/RenderTriangle.cpp
