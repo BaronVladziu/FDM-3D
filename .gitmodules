@@ -1,9 +1,3 @@
-[submodule "glfw"]
-	path = glfw
-	url = https://github.com/glfw/glfw.git
 [submodule "submodules/stb"]
 	path = submodules/stb
 	url = https://github.com/nothings/stb.git
-[submodule "submodules/tinyobjloader"]
-	path = submodules/tinyobjloader
-	url = https://github.com/syoyo/tinyobjloader.git
