@@ -1,0 +1,5 @@
+/home/baronvladziu/Projects/Vulkan/FDM-3D/vulkan/examples/build/CMakeFiles/rebuild_cache.dir
+/home/baronvladziu/Projects/Vulkan/FDM-3D/vulkan/examples/build/CMakeFiles/edit_cache.dir
+/home/baronvladziu/Projects/Vulkan/FDM-3D/vulkan/examples/build/CMakeFiles/cubepp.dir
+/home/baronvladziu/Projects/Vulkan/FDM-3D/vulkan/examples/build/CMakeFiles/vulkaninfo.dir
+/home/baronvladziu/Projects/Vulkan/FDM-3D/vulkan/examples/build/CMakeFiles/cube.dir
