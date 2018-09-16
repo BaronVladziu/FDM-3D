@@ -6,45 +6,29 @@
 
 #IncludeRegexTransform: 
 
-../../submodules/stb/stb_image.h
-stb_image.h
-../../submodules/stb/stb_image.h
-stdio.h
--
-stdarg.h
--
-stddef.h
--
-stdlib.h
--
-string.h
--
-limits.h
--
-math.h
--
-stdio.h
--
-assert.h
--
-stdint.h
--
-emmintrin.h
--
-intrin.h
--
-arm_neon.h
--
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/App.cpp
+App.h
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/App.h
+RenderVertex.h
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/RenderVertex.h
+Map.h
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Map.h
+MapLoader.h
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapLoader.h
+Solver.h
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Solver.h
+
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/App.h
+header.h
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/header.h
+Renderer.h
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Renderer.h
 
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Map.h
 header.h
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/header.h
 RenderTriangle.h
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/RenderTriangle.h
-
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapLoader.cpp
-MapLoader.h
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapLoader.h
 
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapLoader.h
 header.h
@@ -57,18 +41,12 @@ header.h
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/header.h
 RenderVertex.h
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/RenderVertex.h
+TextureType.h
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/TextureType.h
 
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/RenderVertex.h
 header.h
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/header.h
-
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Renderer.cpp
-stb_image.h
--
-Renderer.h
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Renderer.h
-RenderVertex.h
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/RenderVertex.h
 
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Renderer.h
 header.h
@@ -94,6 +72,14 @@ array
 set
 -
 
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Solver.h
+header.h
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/header.h
+Map.h
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Map.h
+
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/TextureType.h
+
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/header.h
 iostream
 -
@@ -101,6 +87,12 @@ fstream
 -
 vector
 -
+list
+-
 string
+-
+math.h
+-
+glm/geometric.hpp
 -
 

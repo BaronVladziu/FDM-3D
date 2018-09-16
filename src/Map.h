@@ -11,11 +11,14 @@
 
 class Map {
 
-    std::vector<RenderTriangle> _triangles;
+    std::list<RenderTriangle> _wallTriangles;
+    std::list<RenderTriangle> _speakerTriangles;
 
 public:
-    void addRenderTriange(const RenderTriangle & triangle);
-    const std::vector<RenderTriangle> & getRenderTriangles() const;
+    void addWallTriange(const RenderTriangle & triangle);
+    const std::list<RenderTriangle> & getWallTriangles() const;
+    void addSpeakerTriange(const RenderTriangle & triangle);
+    const std::list<RenderTriangle> & getSpeakerTriangles() const;
 
 };
 

@@ -38,3 +38,12 @@ void RenderVertex::setTexX(float textureX) {
 void RenderVertex::setTexY(float textureY) {
     _texY = textureY;
 }
+void RenderVertex::setPosition(const glm::vec3 & position) {
+    _posX = position.x;
+    _posY = position.y;
+    _posZ = position.z;
+}
+void RenderVertex::setTexPosition(float textureX, float textureY) {
+    _texX = textureX;
+    _texY = textureY;
+}

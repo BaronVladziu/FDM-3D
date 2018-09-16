@@ -17,10 +17,6 @@
 //Path to a program.
 CMAKE_AR:FILEPATH=/usr/bin/ar
 
-//For backwards compatibility, what version of CMake commands and
-// syntax should this version of CMake try to support.
-CMAKE_BACKWARDS_COMPATIBILITY:STRING=2.4
-
 //Choose the type of build, options are: None Debug Release RelWithDebInfo
 // MinSizeRel ...
 CMAKE_BUILD_TYPE:STRING=Debug
@@ -209,47 +205,17 @@ CMAKE_STRIP:FILEPATH=/usr/bin/strip
 // Studio IDE projects all commands are done without /nologo.
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
-//Path to a library.
-DL:FILEPATH=/usr/lib/x86_64-linux-gnu/libdl.so
-
-//Single output directory for building all executables.
-EXECUTABLE_OUTPUT_PATH:PATH=
-
-//Path to a library.
-GLFW:FILEPATH=/usr/local/lib/libglfw3.a
-
-//The directory containing a CMake configuration file for GLFW.
-GLFW_DIR:PATH=GLFW_DIR-NOTFOUND
-
 //The directory where GLFW/glfw3.h resides
 GLFW_INCLUDE_DIR:PATH=/usr/local/include
 
 //The GLFW library
 GLFW_glfw_LIBRARY:FILEPATH=/usr/local/lib/libglfw3.a
 
-//Single output directory for building all libraries.
-LIBRARY_OUTPUT_PATH:PATH=
-
 //Path to a program.
 ProcessorCount_cmd_getconf:FILEPATH=/usr/bin/getconf
 
 //Path to a program.
 ProcessorCount_cmd_sysctl:FILEPATH=/sbin/sysctl
-
-//Value Computed by CMake
-Project_BINARY_DIR:STATIC=/home/baronvladziu/Projects/Vulkan/FDM-3D/src/cmake-build-debug
-
-//Value Computed by CMake
-Project_SOURCE_DIR:STATIC=/home/baronvladziu/Projects/Vulkan/FDM-3D/src
-
-//Path to a library.
-VULKAN:FILEPATH=/usr/local/lib/libglfw3.a
-
-//Path to a file.
-Vulkan_INCLUDE_DIR:PATH=Vulkan_INCLUDE_DIR-NOTFOUND
-
-//Path to a library.
-Vulkan_LIBRARY:FILEPATH=Vulkan_LIBRARY-NOTFOUND
 
 //Path to a file.
 X11_ICE_INCLUDE_PATH:PATH=/usr/include
@@ -434,20 +400,11 @@ X11_xf86misc_INCLUDE_PATH:PATH=X11_xf86misc_INCLUDE_PATH-NOTFOUND
 //Path to a file.
 X11_xf86vmode_INCLUDE_PATH:PATH=/usr/include
 
-//Path to a library.
-vulkan-fdm:FILEPATH=/usr/local/lib/libglfw3.a
-
 //Value Computed by CMake
 vulkan-fdm_BINARY_DIR:STATIC=/home/baronvladziu/Projects/Vulkan/FDM-3D/src/cmake-build-debug
 
 //Value Computed by CMake
 vulkan-fdm_SOURCE_DIR:STATIC=/home/baronvladziu/Projects/Vulkan/FDM-3D/src
-
-//Value Computed by CMake
-vulkan_BINARY_DIR:STATIC=/home/baronvladziu/Projects/Vulkan/FDM-3D/src/cmake-build-debug
-
-//Value Computed by CMake
-vulkan_SOURCE_DIR:STATIC=/home/baronvladziu/Projects/Vulkan/FDM-3D/src
 
 
 ########################

@@ -39,7 +39,7 @@
 			</Target>
 			<Target title="vulkan-fdm">
 				<Option output="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/cmake-build-debug/vulkan-fdm" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir=""/>
+				<Option working_dir="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
@@ -64,7 +64,7 @@
 			</Target>
 			<Target title="vulkan-fdm/fast">
 				<Option output="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/cmake-build-debug/vulkan-fdm" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir=""/>
+				<Option working_dir="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
@@ -92,6 +92,12 @@
 			<Option target="vulkan-fdm"/>
 		</Unit>
 		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/App.h">
+			<Option target="vulkan-fdm"/>
+		</Unit>
+		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/ComplexFloat.cpp">
+			<Option target="vulkan-fdm"/>
+		</Unit>
+		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/ComplexFloat.h">
 			<Option target="vulkan-fdm"/>
 		</Unit>
 		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Map.cpp">
@@ -122,6 +128,21 @@
 			<Option target="vulkan-fdm"/>
 		</Unit>
 		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Renderer.h">
+			<Option target="vulkan-fdm"/>
+		</Unit>
+		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Solver.cpp">
+			<Option target="vulkan-fdm"/>
+		</Unit>
+		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Solver.h">
+			<Option target="vulkan-fdm"/>
+		</Unit>
+		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/SolverPoint.cpp">
+			<Option target="vulkan-fdm"/>
+		</Unit>
+		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/SolverPoint.h">
+			<Option target="vulkan-fdm"/>
+		</Unit>
+		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/TextureType.h">
 			<Option target="vulkan-fdm"/>
 		</Unit>
 		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/header.h">

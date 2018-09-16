@@ -7,15 +7,18 @@
 
 #include "header.h"
 #include "RenderVertex.h"
+#include "TextureType.h"
 
 
 class RenderTriangle {
 
-    std::vector<RenderVertex> _vertices;
+    TextureType _textureID;
+    std::list<RenderVertex> _vertices;
 
 public:
-    RenderTriangle(RenderVertex v1, RenderVertex v2, RenderVertex v3);
-    const std::vector<RenderVertex> & getVertices() const;
+    RenderTriangle(TextureType textureID, RenderVertex v1, RenderVertex v2, RenderVertex v3);
+    const TextureType getTexID() const;
+    const std::list<RenderVertex> & getVertices() const;
 
 };
 

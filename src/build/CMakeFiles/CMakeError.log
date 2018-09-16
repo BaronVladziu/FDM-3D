@@ -1,0 +1,55 @@
+Determining if the pthread_create exist failed with the following output:
+Change Dir: /home/baronvladziu/Projects/Vulkan/FDM-3D/src/build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_9e139/fast"
+/usr/bin/make -f CMakeFiles/cmTC_9e139.dir/build.make CMakeFiles/cmTC_9e139.dir/build
+make[1]: Entering directory '/home/baronvladziu/Projects/Vulkan/FDM-3D/src/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_9e139.dir/CheckSymbolExists.c.o
+/usr/bin/cc    -o CMakeFiles/cmTC_9e139.dir/CheckSymbolExists.c.o   -c /home/baronvladziu/Projects/Vulkan/FDM-3D/src/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTC_9e139
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_9e139.dir/link.txt --verbose=1
+/usr/bin/cc      CMakeFiles/cmTC_9e139.dir/CheckSymbolExists.c.o  -o cmTC_9e139 
+CMakeFiles/cmTC_9e139.dir/CheckSymbolExists.c.o: In function `main':
+CheckSymbolExists.c:(.text+0x1b): undefined reference to `pthread_create'
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_9e139.dir/build.make:97: recipe for target 'cmTC_9e139' failed
+make[1]: *** [cmTC_9e139] Error 1
+make[1]: Leaving directory '/home/baronvladziu/Projects/Vulkan/FDM-3D/src/build/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_9e139/fast' failed
+make: *** [cmTC_9e139/fast] Error 2
+
+File /home/baronvladziu/Projects/Vulkan/FDM-3D/src/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <pthread.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /home/baronvladziu/Projects/Vulkan/FDM-3D/src/build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_3712b/fast"
+/usr/bin/make -f CMakeFiles/cmTC_3712b.dir/build.make CMakeFiles/cmTC_3712b.dir/build
+make[1]: Entering directory '/home/baronvladziu/Projects/Vulkan/FDM-3D/src/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_3712b.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_3712b.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.10/Modules/CheckFunctionExists.c
+Linking C executable cmTC_3712b
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_3712b.dir/link.txt --verbose=1
+/usr/bin/cc  -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_3712b.dir/CheckFunctionExists.c.o  -o cmTC_3712b -lpthreads 
+/usr/bin/x86_64-linux-gnu-ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_3712b.dir/build.make:97: recipe for target 'cmTC_3712b' failed
+make[1]: *** [cmTC_3712b] Error 1
+make[1]: Leaving directory '/home/baronvladziu/Projects/Vulkan/FDM-3D/src/build/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_3712b/fast' failed
+make: *** [cmTC_3712b/fast] Error 2
+
+

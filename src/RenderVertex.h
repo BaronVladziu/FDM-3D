@@ -29,6 +29,8 @@ public:
     void setZ(float z);
     void setTexX(float textureX);
     void setTexY(float textureY);
+    void setPosition(const glm::vec3 & position);
+    void setTexPosition(float textureX, float textureY);
 
 };
 

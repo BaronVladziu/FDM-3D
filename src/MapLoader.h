@@ -10,7 +10,7 @@
 
 
 enum MapLoaderState {
-    WAITING_FOR_MAP_START, //0
+    WAITING_FOR_FILE_START, //0
     WAITING_FOR_POINTS_START, //1
     WAITING_FOR_ANOTHER_POINT_VALUE, //2
     WAITING_FOR_POINT_ID, //3
@@ -31,7 +31,7 @@ enum MapLoaderState {
 class MapLoader {
 
 public:
-    Map loadMap(const std::string & mapJsonPath) const;
+    Map loadMap(const std::string & wallsJsonPath, const std::string & speakersJsonPath) const;
 
 };
 

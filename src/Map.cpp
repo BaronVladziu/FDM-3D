@@ -5,9 +5,15 @@
 #include "Map.h"
 
 
-void Map::addRenderTriange(const RenderTriangle & triangle) {
-    _triangles.push_back(triangle);
+void Map::addWallTriange(const RenderTriangle & triangle) {
+    _wallTriangles.push_back(triangle);
 }
-const std::vector<RenderTriangle> & Map::getRenderTriangles() const {
-    return _triangles;
+const std::list<RenderTriangle> & Map::getWallTriangles() const {
+    return _wallTriangles;
+}
+void Map::addSpeakerTriange(const RenderTriangle & triangle) {
+    _speakerTriangles.push_back(triangle);
+}
+const std::list<RenderTriangle> & Map::getSpeakerTriangles() const {
+    return _speakerTriangles;
 }

@@ -37,7 +37,7 @@ const std::vector<const char*> deviceExtensions = {
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
 #else
-const bool enableValidationLayers = true;
+const bool enableValidationLayers = false; //TODO: Make validation layers work
 #endif
 
 VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pCallback);
@@ -87,7 +87,7 @@ class Renderer {
     std::vector<uint16_t> indices;
 
 public:
-    void init(const std::vector<RenderTriangle> & renderTriangles);
+    void init(const std::list<RenderTriangle> & renderTriangles);
     bool isWindowOpen() const;
     void draw();
     void clean();

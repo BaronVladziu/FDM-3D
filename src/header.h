@@ -8,6 +8,9 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <list>
 #include <string>
+#include <math.h>
+#include <glm/geometric.hpp>
 
 #endif //VULKAN_FDM_HEADER_H
