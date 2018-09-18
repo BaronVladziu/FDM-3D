@@ -5,6 +5,9 @@
 #include "RenderVertex.h"
 
 
+RenderVertex::RenderVertex(glm::vec3 position, float textureX, float textureY)
+    : _posX(position.x), _posY(position.y), _posZ(position.z), _texX(textureX), _texY(textureY)
+{}
 RenderVertex::RenderVertex(float x, float y, float z, float textureX, float textureY)
     : _posX(x), _posY(y), _posZ(z), _texX(textureX), _texY(textureY)
 {}

@@ -6,35 +6,13 @@
 
 #IncludeRegexTransform: 
 
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/App.cpp
-App.h
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/App.h
-RenderVertex.h
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/RenderVertex.h
-Map.h
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Map.h
-MapLoader.h
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapLoader.h
-Solver.h
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Solver.h
-
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/App.h
-header.h
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/header.h
-Renderer.h
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Renderer.h
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/ComplexFloat.h
 
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Map.h
 header.h
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/header.h
 RenderTriangle.h
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/RenderTriangle.h
-
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapLoader.h
-header.h
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/header.h
-Map.h
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Map.h
 
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/RenderTriangle.h
 header.h
@@ -48,35 +26,23 @@ TextureType.h
 header.h
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/header.h
 
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Renderer.h
-header.h
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/header.h
-RenderTriangle.h
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/RenderTriangle.h
-GLFW/glfw3.h
--
-glm/glm.hpp
--
-glm/gtc/matrix_transform.hpp
--
-algorithm
--
-chrono
--
-cstring
--
-cstdlib
--
-array
--
-set
--
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Solver.cpp
+Solver.h
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Solver.h
 
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Solver.h
 header.h
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/header.h
 Map.h
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Map.h
+SolverPoint.h
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/SolverPoint.h
+
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/SolverPoint.h
+glm/vec3.hpp
+-
+ComplexFloat.h
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/ComplexFloat.h
 
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/TextureType.h
 

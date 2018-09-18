@@ -4,12 +4,14 @@
 CMakeFiles/vulkan-fdm.dir/App.cpp.o
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/App.cpp
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/App.h
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/ComplexFloat.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Map.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapLoader.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/RenderTriangle.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/RenderVertex.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Renderer.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Solver.h
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/SolverPoint.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/TextureType.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/header.h
 CMakeFiles/vulkan-fdm.dir/ComplexFloat.cpp.o

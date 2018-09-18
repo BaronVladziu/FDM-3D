@@ -7,6 +7,7 @@
 
 #include "header.h"
 #include "Map.h"
+#include "SolverPoint.h"
 
 
 class Solver {
@@ -29,7 +30,7 @@ public:
     std::list<RenderTriangle> solveRoom(const Map & map, float frequency);
 
 private:
-    std::list<RenderTriangle> markAndCreateCubes(bool *** cubeMatrix,
+    std::list<RenderTriangle> markAndCreateCubes(bool *** cubeMatrix, SolverPoint *** grid,
             const std::list<RenderTriangle> & trianglesToCube, TextureType textureID) const;
     std::list<glm::ivec3> findCubesOnLine(const glm::ivec3 & point1, const glm::ivec3 & point2) const;
 

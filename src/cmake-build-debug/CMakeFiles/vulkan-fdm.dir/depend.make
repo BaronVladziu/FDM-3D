@@ -3,12 +3,14 @@
 
 CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../App.cpp
 CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../App.h
+CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../ComplexFloat.h
 CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../Map.h
 CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../MapLoader.h
 CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../RenderTriangle.h
 CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../RenderVertex.h
 CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../Renderer.h
 CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../Solver.h
+CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../SolverPoint.h
 CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../TextureType.h
 CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../header.h
 

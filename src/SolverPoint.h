@@ -5,9 +5,9 @@
 #ifndef VULKAN_FDM_SOLVERPOINT_H
 #define VULKAN_FDM_SOLVERPOINT_H
 
-
 #include <glm/vec3.hpp>
 #include "ComplexFloat.h"
+
 
 class SolverPoint {
 
@@ -18,6 +18,7 @@ class SolverPoint {
 public:
     void setToSource(const ComplexFloat & pressure);
     void setNormalVector(const glm::vec3 & vector);
+    const glm::vec3 & getNormalVector() const;
 
 };
 

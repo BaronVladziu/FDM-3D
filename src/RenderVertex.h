@@ -18,6 +18,7 @@ class RenderVertex {
 
 public:
     RenderVertex() = default;
+    RenderVertex(glm::vec3 position, float textureX, float textureY);
     RenderVertex(float x, float y, float z, float textureX, float textureY);
     float getX() const;
     float getY() const;

@@ -3,7 +3,6 @@
 //
 
 #include "Solver.h"
-#include "SolverPoint.h"
 
 
 //public:
@@ -49,7 +48,13 @@ std::list<RenderTriangle> Solver::solveRoom(const Map & map, float frequency) {
     _pointMatrixSizeY = int((_maxY - _minY) / _edgeLength) + 1;
     _pointMatrixSizeZ = int((_maxZ - _minZ) / _edgeLength) + 1;
     std::cout << "Grid size: " << _pointMatrixSizeX << " - " << _pointMatrixSizeY << " - " << _pointMatrixSizeZ << std::endl;
-    SolverPoint grid[_pointMatrixSizeX + 1][_pointMatrixSizeY + 1][_pointMatrixSizeZ + 1];
+    SolverPoint *** grid = new SolverPoint ** [_pointMatrixSizeX + 1];
+    for (int i = 0; i < _pointMatrixSizeX + 1; i++) {
+        grid[i] = new SolverPoint * [_pointMatrixSizeY + 1];
+        for (int j = 0; j < _pointMatrixSizeY + 1; j++) {
+            grid[i][j] = new SolverPoint[_pointMatrixSizeZ + 1];
+        }
+    }
     //Create cube matrix
     bool *** cubeMatrix = new bool ** [_pointMatrixSizeX];
     for (int i = 0; i < _pointMatrixSizeX; i++) {
@@ -63,11 +68,18 @@ std::list<RenderTriangle> Solver::solveRoom(const Map & map, float frequency) {
     }
 
     //--- SET WALLS---//
-    std::list<RenderTriangle> cubeTriangles = markAndCreateCubes(cubeMatrix, wallTriangles, TextureType::WALL);
-    std::list<RenderTriangle> cubesSpeakerTriangles = markAndCreateCubes(cubeMatrix, speakerTriangles, TextureType::SPEAKER);
+    std::list<RenderTriangle> cubeTriangles = markAndCreateCubes(cubeMatrix, grid, wallTriangles, TextureType::WALL);
+    std::list<RenderTriangle> cubesSpeakerTriangles = markAndCreateCubes(cubeMatrix, grid, speakerTriangles, TextureType::SPEAKER);
     cubeTriangles.insert(cubeTriangles.end(), cubesSpeakerTriangles.begin(), cubesSpeakerTriangles.end());
 
     //Cleanup
+    for (int i = 0; i < _pointMatrixSizeX + 1; i++) {
+        for (int j = 0; j < _pointMatrixSizeY + 1; j++) {
+            delete[] grid[i][j];
+        }
+        delete[] grid[i];
+    }
+    delete[] grid;
     for (int i = 0; i < _pointMatrixSizeX; i++) {
         for (int j = 0; j < _pointMatrixSizeY; j++) {
             delete[] cubeMatrix[i][j];
@@ -80,8 +92,9 @@ std::list<RenderTriangle> Solver::solveRoom(const Map & map, float frequency) {
 }
 
 //private:
-std::list<RenderTriangle> Solver::markAndCreateCubes(bool *** cubeMatrix,
+std::list<RenderTriangle> Solver::markAndCreateCubes(bool *** cubeMatrix, SolverPoint *** grid,
         const std::list<RenderTriangle> & trianglesToCube, TextureType textureID) const {
+    std::list<RenderTriangle> cubeRenderTriangles;
     for (const RenderTriangle & renT : trianglesToCube) {
         //Get triangle points
         glm::vec3 point1;
@@ -112,7 +125,7 @@ std::list<RenderTriangle> Solver::markAndCreateCubes(bool *** cubeMatrix,
         //Calculate normal vector
         glm::vec3 vec1 = point2 - point1;
         glm::vec3 vec2 = point3 - point1;
-        glm::vec3 normalVector = glm::cross(vec1, vec2);
+        glm::vec3 normalVector = glm::normalize(glm::cross(vec1, vec2));
         //Find corner cubes
         glm::ivec3 corner1 = glm::ivec3(int((point1.x - _minX)/_edgeLength),
                                         int((point1.y - _minY)/_edgeLength),
@@ -152,80 +165,192 @@ std::list<RenderTriangle> Solver::markAndCreateCubes(bool *** cubeMatrix,
                 }
             }
         }
-    }
 
-    //Print cubes
-    for (int k = 0; k < _pointMatrixSizeZ; k++) {
-        for (int j = 0; j < _pointMatrixSizeY; j++) {
-            for (int i = 0; i < _pointMatrixSizeX; i++) {
-                std::cout << cubeMatrix[i][j][k] << '\t';
+        //Create render triangles from cube matrix
+        for (int k = 0; k < _pointMatrixSizeZ; k++) {
+            for (int j = 0; j < _pointMatrixSizeY; j++) {
+                for (int i = 0; i < _pointMatrixSizeX; i++) {
+                    if (cubeMatrix[i][j][k]) {
+                        //Create points
+                        RenderVertex pointNNN = RenderVertex(_minX + i*_edgeLength, _minY + j*_edgeLength, _minZ + k*_edgeLength, 0.f, 0.f);
+                        RenderVertex pointNNP = RenderVertex(_minX + i*_edgeLength, _minY + j*_edgeLength, _minZ + (k+1)*_edgeLength, 0.f, 0.f);
+                        RenderVertex pointNPN = RenderVertex(_minX + i*_edgeLength, _minY + (j+1)*_edgeLength, _minZ + k*_edgeLength, 0.f, 0.f);
+                        RenderVertex pointNPP = RenderVertex(_minX + i*_edgeLength, _minY + (j+1)*_edgeLength, _minZ + (k+1)*_edgeLength, 0.f, 0.f);
+                        RenderVertex pointPNN = RenderVertex(_minX + (i+1)*_edgeLength, _minY + j*_edgeLength, _minZ + k*_edgeLength, 0.f, 0.f);
+                        RenderVertex pointPNP = RenderVertex(_minX + (i+1)*_edgeLength, _minY + j*_edgeLength, _minZ + (k+1)*_edgeLength, 0.f, 0.f);
+                        RenderVertex pointPPN = RenderVertex(_minX + (i+1)*_edgeLength, _minY + (j+1)*_edgeLength, _minZ + k*_edgeLength, 0.f, 0.f);
+                        RenderVertex pointPPP = RenderVertex(_minX + (i+1)*_edgeLength, _minY + (j+1)*_edgeLength, _minZ + (k+1)*_edgeLength, 0.f, 0.f);
+                        //Create +X plane
+                        pointPNP.setTexPosition(0.f, 0.f);
+                        pointPPP.setTexPosition(1.f, 0.f);
+                        pointPPN.setTexPosition(1.f, 1.f);
+                        pointPNN.setTexPosition(0.f, 1.f);
+                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointPNN, pointPPN, pointPPP));
+                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointPPP, pointPNP, pointPNN));
+                        //Create -X plane
+                        pointNPP.setTexPosition(0.f, 0.f);
+                        pointNPN.setTexPosition(0.f, 1.f);
+                        pointNNN.setTexPosition(1.f, 1.f);
+                        pointNNP.setTexPosition(1.f, 0.f);
+                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointNPP, pointNPN, pointNNN));
+                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointNNN, pointNNP, pointNPP));
+                        //Create +Y plane
+                        pointNPP.setTexPosition(1.f, 0.f);
+                        pointPPP.setTexPosition(0.f, 0.f);
+                        pointPPN.setTexPosition(0.f, 1.f);
+                        pointNPN.setTexPosition(1.f, 1.f);
+                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointNPP, pointPPP, pointPPN));
+                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointPPN, pointNPN, pointNPP));
+                        //Create -Y plane
+                        pointNNP.setTexPosition(0.f, 0.f);
+                        pointPNP.setTexPosition(1.f, 0.f);
+                        pointPNN.setTexPosition(1.f, 1.f);
+                        pointNNN.setTexPosition(0.f, 1.f);
+                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointNNP, pointNNN, pointPNN));
+                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointPNN, pointPNP, pointNNP));
+                        //Create +Z plane
+                        pointNPP.setTexPosition(1.f, 1.f);
+                        pointPPP.setTexPosition(0.f, 1.f);
+                        pointPNP.setTexPosition(0.f, 0.f);
+                        pointNNP.setTexPosition(1.f, 0.f);
+                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointNPP, pointNNP, pointPNP));
+                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointPNP, pointPPP, pointNPP));
+                        //Create -Z plane
+                        pointNPN.setTexPosition(0.f, 0.f);
+                        pointPPN.setTexPosition(1.f, 0.f);
+                        pointPNN.setTexPosition(1.f, 1.f);
+                        pointNNN.setTexPosition(0.f, 1.f);
+                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointNPN, pointPPN, pointPNN));
+                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointPNN, pointNNN, pointNPN));
+                    }
+                }
             }
-            std::cout << std::endl;
         }
-        std::cout << std::endl;
-    }
-    //Create render triangles from cube matrix
-    std::list<RenderTriangle> renderTriangles;
-    for (int k = 0; k < _pointMatrixSizeZ; k++) {
-        for (int j = 0; j < _pointMatrixSizeY; j++) {
-            for (int i = 0; i < _pointMatrixSizeX; i++) {
-                if (cubeMatrix[i][j][k]) {
-                    //Create points
-                    RenderVertex pointNNN = RenderVertex(_minX + i*_edgeLength, _minY + j*_edgeLength, _minZ + k*_edgeLength, 0.f, 0.f);
-                    RenderVertex pointNNP = RenderVertex(_minX + i*_edgeLength, _minY + j*_edgeLength, _minZ + (k+1)*_edgeLength, 0.f, 0.f);
-                    RenderVertex pointNPN = RenderVertex(_minX + i*_edgeLength, _minY + (j+1)*_edgeLength, _minZ + k*_edgeLength, 0.f, 0.f);
-                    RenderVertex pointNPP = RenderVertex(_minX + i*_edgeLength, _minY + (j+1)*_edgeLength, _minZ + (k+1)*_edgeLength, 0.f, 0.f);
-                    RenderVertex pointPNN = RenderVertex(_minX + (i+1)*_edgeLength, _minY + j*_edgeLength, _minZ + k*_edgeLength, 0.f, 0.f);
-                    RenderVertex pointPNP = RenderVertex(_minX + (i+1)*_edgeLength, _minY + j*_edgeLength, _minZ + (k+1)*_edgeLength, 0.f, 0.f);
-                    RenderVertex pointPPN = RenderVertex(_minX + (i+1)*_edgeLength, _minY + (j+1)*_edgeLength, _minZ + k*_edgeLength, 0.f, 0.f);
-                    RenderVertex pointPPP = RenderVertex(_minX + (i+1)*_edgeLength, _minY + (j+1)*_edgeLength, _minZ + (k+1)*_edgeLength, 0.f, 0.f);
-                    //Create +X plane
-                    pointPNP.setTexPosition(0.f, 0.f);
-                    pointPPP.setTexPosition(1.f, 0.f);
-                    pointPPN.setTexPosition(1.f, 1.f);
-                    pointPNN.setTexPosition(0.f, 1.f);
-                    renderTriangles.emplace_back(RenderTriangle(textureID, pointPNN, pointPPN, pointPPP));
-                    renderTriangles.emplace_back(RenderTriangle(textureID, pointPPP, pointPNP, pointPNN));
-                    //Create -X plane
-                    pointNPP.setTexPosition(0.f, 0.f);
-                    pointNPN.setTexPosition(0.f, 1.f);
-                    pointNNN.setTexPosition(1.f, 1.f);
-                    pointNNP.setTexPosition(1.f, 0.f);
-                    renderTriangles.emplace_back(RenderTriangle(textureID, pointNPP, pointNPN, pointNNN));
-                    renderTriangles.emplace_back(RenderTriangle(textureID, pointNNN, pointNNP, pointNPP));
-                    //Create +Y plane
-                    pointNPP.setTexPosition(1.f, 0.f);
-                    pointPPP.setTexPosition(0.f, 0.f);
-                    pointPPN.setTexPosition(0.f, 1.f);
-                    pointNPN.setTexPosition(1.f, 1.f);
-                    renderTriangles.emplace_back(RenderTriangle(textureID, pointNPP, pointPPP, pointPPN));
-                    renderTriangles.emplace_back(RenderTriangle(textureID, pointPPN, pointNPN, pointNPP));
-                    //Create -Y plane
-                    pointNNP.setTexPosition(0.f, 0.f);
-                    pointPNP.setTexPosition(1.f, 0.f);
-                    pointPNN.setTexPosition(1.f, 1.f);
-                    pointNNN.setTexPosition(0.f, 1.f);
-                    renderTriangles.emplace_back(RenderTriangle(textureID, pointNNP, pointNNN, pointPNN));
-                    renderTriangles.emplace_back(RenderTriangle(textureID, pointPNN, pointPNP, pointNNP));
-                    //Create +Z plane
-                    pointNPP.setTexPosition(1.f, 1.f);
-                    pointPPP.setTexPosition(0.f, 1.f);
-                    pointPNP.setTexPosition(0.f, 0.f);
-                    pointNNP.setTexPosition(1.f, 0.f);
-                    renderTriangles.emplace_back(RenderTriangle(textureID, pointNPP, pointNNP, pointPNP));
-                    renderTriangles.emplace_back(RenderTriangle(textureID, pointPNP, pointPPP, pointNPP));
-                    //Create -Z plane
-                    pointNPN.setTexPosition(0.f, 0.f);
-                    pointPPN.setTexPosition(1.f, 0.f);
-                    pointPNN.setTexPosition(1.f, 1.f);
-                    pointNNN.setTexPosition(0.f, 1.f);
-                    renderTriangles.emplace_back(RenderTriangle(textureID, pointNPN, pointPPN, pointPNN));
-                    renderTriangles.emplace_back(RenderTriangle(textureID, pointPNN, pointNNN, pointNPN));
+
+        //Set normal vectors
+        for (int k = 0; k < _pointMatrixSizeZ; k++) {
+            for (int j = 0; j < _pointMatrixSizeY; j++) {
+                for (int i = 0; i < _pointMatrixSizeX; i++) {
+                    if (cubeMatrix[i][j][k]) {
+                        if (glm::dot(normalVector, glm::vec3(-_edgeLength/2, -_edgeLength/2, -_edgeLength/2)) > 0) {
+                            grid[i][j][k].setNormalVector(grid[i][j][k].getNormalVector() + normalVector);
+                        } else {
+                            grid[i][j][k].setNormalVector(grid[i][j][k].getNormalVector() - normalVector);
+                        }
+
+                        if (glm::dot(normalVector, glm::vec3(_edgeLength/2, -_edgeLength/2, -_edgeLength/2)) > 0) {
+                            grid[i + 1][j][k].setNormalVector(grid[i + 1][j][k].getNormalVector() + normalVector);
+                        } else {
+                            grid[i + 1][j][k].setNormalVector(grid[i + 1][j][k].getNormalVector() - normalVector);
+                        }
+
+                        if (glm::dot(normalVector, glm::vec3(-_edgeLength/2, _edgeLength/2, -_edgeLength/2)) > 0) {
+                            grid[i][j + 1][k].setNormalVector(grid[i][j + 1][k].getNormalVector() + normalVector);
+                        } else {
+                            grid[i][j + 1][k].setNormalVector(grid[i][j + 1][k].getNormalVector() - normalVector);
+                        }
+
+                        if (glm::dot(normalVector, glm::vec3(-_edgeLength/2, -_edgeLength/2, _edgeLength/2)) > 0) {
+                            grid[i][j][k + 1].setNormalVector(grid[i][j][k + 1].getNormalVector() + normalVector);
+                        } else {
+                            grid[i][j][k + 1].setNormalVector(grid[i][j][k + 1].getNormalVector() - normalVector);
+                        }
+
+                        if (glm::dot(normalVector, glm::vec3(_edgeLength/2, _edgeLength/2, -_edgeLength/2)) > 0) {
+                            grid[i + 1][j + 1][k].setNormalVector(grid[i + 1][j + 1][k].getNormalVector() + normalVector);
+                        } else {
+                            grid[i + 1][j + 1][k].setNormalVector(grid[i + 1][j + 1][k].getNormalVector() - normalVector);
+                        }
+
+                        if (glm::dot(normalVector, glm::vec3(_edgeLength/2, -_edgeLength/2, _edgeLength/2)) > 0) {
+                            grid[i + 1][j][k + 1].setNormalVector(grid[i + 1][j][k + 1].getNormalVector() + normalVector);
+                        } else {
+                            grid[i + 1][j][k + 1].setNormalVector(grid[i + 1][j][k + 1].getNormalVector() - normalVector);
+                        }
+
+                        if (glm::dot(normalVector, glm::vec3(-_edgeLength/2, _edgeLength/2, _edgeLength/2)) > 0) {
+                            grid[i][j + 1][k + 1].setNormalVector(grid[i][j + 1][k + 1].getNormalVector() + normalVector);
+                        } else {
+                            grid[i][j + 1][k + 1].setNormalVector(grid[i][j + 1][k + 1].getNormalVector() - normalVector);
+                        }
+
+                        if (glm::dot(normalVector, glm::vec3(_edgeLength/2, _edgeLength/2, _edgeLength/2)) > 0) {
+                            grid[i + 1][j + 1][k + 1].setNormalVector(grid[i + 1][j + 1][k + 1].getNormalVector() + normalVector);
+                        } else {
+                            grid[i + 1][j + 1][k + 1].setNormalVector(grid[i + 1][j + 1][k + 1].getNormalVector() - normalVector);
+                        }
+                    }
+                }
+            }
+        }
+
+        //Clear cube matrix
+        for (int k = 0; k < _pointMatrixSizeZ; k++) {
+            for (int j = 0; j < _pointMatrixSizeY; j++) {
+                for (int i = 0; i < _pointMatrixSizeX; i++) {
+                    cubeMatrix[i][j][k] = false;
                 }
             }
         }
     }
-    return renderTriangles;
+
+    //Normalize normal vectors
+    for (int k = 0; k < _pointMatrixSizeZ + 1; k++) {
+        for (int j = 0; j < _pointMatrixSizeY + 1; j++) {
+            for (int i = 0; i < _pointMatrixSizeX + 1; i++) {
+                if (grid[i][j][k].getNormalVector() != glm::vec3(0,0,0)) {
+                    grid[i][j][k].setNormalVector(glm::normalize(grid[i][j][k].getNormalVector()));
+                }
+            }
+        }
+    }
+    //Create normals render triangles
+    std::list<RenderTriangle> normalsRenderTriangles;
+    for (int k = 0; k < _pointMatrixSizeZ + 1; k++) {
+        for (int j = 0; j < _pointMatrixSizeY + 1; j++) {
+            for (int i = 0; i < _pointMatrixSizeX + 1; i++) {
+                if (grid[i][j][k].getNormalVector() != glm::vec3(0,0,0)) {
+                    glm::vec3 pointPosition = glm::vec3(_minX + i*_edgeLength, _minY + j*_edgeLength, _minZ + k*_edgeLength);
+                    glm::vec3 firstSideVector;
+                    glm::vec3 secondSideVector;
+                    if (abs(grid[i][j][k].getNormalVector().x) > abs(grid[i][j][k].getNormalVector().z)) {
+                        firstSideVector = glm::normalize(glm::cross(grid[i][j][k].getNormalVector(), glm::vec3(0,0,1)));
+                    } else {
+                        firstSideVector = glm::normalize(glm::cross(grid[i][j][k].getNormalVector(), glm::vec3(1,0,0)));
+                    }
+                    secondSideVector = glm::normalize(glm::cross(grid[i][j][k].getNormalVector(), firstSideVector));
+
+                    glm::vec3 point0Position = pointPosition + 0.03f*grid[i][j][k].getNormalVector();
+                    glm::vec3 point11Position = pointPosition + 0.007f*firstSideVector;
+                    glm::vec3 point12Position = pointPosition - 0.007f*firstSideVector;
+                    glm::vec3 point21Position = pointPosition + 0.007f*secondSideVector;
+                    glm::vec3 point22Position = pointPosition - 0.007f*secondSideVector;
+
+                    normalsRenderTriangles.emplace_back(RenderTriangle(textureID, RenderVertex(point11Position, 0, 0),
+                            RenderVertex(point0Position, 1, 0), RenderVertex(point12Position, 1, 1)));
+                    normalsRenderTriangles.emplace_back(RenderTriangle(textureID, RenderVertex(point12Position, 0, 0),
+                            RenderVertex(point0Position, 1, 0), RenderVertex(point11Position, 1, 1)));
+                    normalsRenderTriangles.emplace_back(RenderTriangle(textureID, RenderVertex(point21Position, 0, 0),
+                            RenderVertex(point0Position, 1, 0), RenderVertex(point22Position, 1, 1)));
+                    normalsRenderTriangles.emplace_back(RenderTriangle(textureID, RenderVertex(point22Position, 0, 0),
+                            RenderVertex(point0Position, 1, 0), RenderVertex(point21Position, 1, 1)));
+                }
+            }
+        }
+    }
+
+//    //Print cubes
+//    for (int k = 0; k < _pointMatrixSizeZ; k++) {
+//        for (int j = 0; j < _pointMatrixSizeY; j++) {
+//            for (int i = 0; i < _pointMatrixSizeX; i++) {
+//                std::cout << cubeMatrix[i][j][k] << '\t';
+//            }
+//            std::cout << std::endl;
+//        }
+//        std::cout << std::endl;
+//    }
+
+    return normalsRenderTriangles;
 }
 
 std::list<glm::ivec3> Solver::findCubesOnLine(const glm::ivec3 & point1, const glm::ivec3 & point2) const {
