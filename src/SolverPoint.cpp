@@ -14,3 +14,9 @@ void SolverPoint::setNormalVector(const glm::vec3 & vector) {
 const glm::vec3 & SolverPoint::getNormalVector() const {
     return _normalVector;
 }
+bool SolverPoint::isSource() const {
+    return _isSource;
+}
+const ComplexFloat & SolverPoint::getPressure() const {
+    return _sourcePressure;
+}

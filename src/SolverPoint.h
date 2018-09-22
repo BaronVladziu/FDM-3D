@@ -19,6 +19,8 @@ public:
     void setToSource(const ComplexFloat & pressure);
     void setNormalVector(const glm::vec3 & vector);
     const glm::vec3 & getNormalVector() const;
+    bool isSource() const;
+    const ComplexFloat & getPressure() const;
 
 };
 
