@@ -7,6 +7,7 @@
 
 void SolverPoint::setToSource(const ComplexFloat & pressure) {
     _isSource = true;
+    _sourcePressure = pressure;
 }
 void SolverPoint::setNormalVector(const glm::vec3 & vector) {
     _normalVector = vector;

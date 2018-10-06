@@ -75,15 +75,17 @@ std::list<RenderTriangle> Solver::solveRoom(const Map & map, float frequency) {
     cubeTriangles.insert(cubeTriangles.end(), cubesSpeakerTriangles.begin(), cubesSpeakerTriangles.end());
 
     //--- CREATE EQUATIONS ---//
-    SystemOfEquations equations = createSystemOfEquations(grid);
+    MatrixSystemOfEquations equations = createSystemOfEquations(grid);
+    equations.solve(100);
 
     //Print equations
     std::ofstream myfile;
     myfile.open ("equations.txt");
     for (int j = 0; j < equations.getNumberOfVariables(); j++) {
-        for (int i = 0; i < equations.getNumberOfVariables() + 1; i++) {
-            myfile << equations.get(i, j) << '\t';
+        for (int i = 0; i < equations.getNumberOfVariables(); i++) {
+            myfile << equations.get(i, j).real << "+" << equations.get(i, j).imag << "i\t";
         }
+        myfile << equations.getConstant(j).real << "+" << equations.getConstant(j).imag << "i\t";
         myfile << std::endl;
     }
     myfile << std::endl;
@@ -105,7 +107,34 @@ std::list<RenderTriangle> Solver::solveRoom(const Map & map, float frequency) {
     }
     delete[] cubeMatrix;
 
-    return cubeTriangles;
+    //--- CREATE SOLUTION CUBES ---//
+    std::list<RenderTriangle> solutionTriangles;
+    for (int ix = 0; ix < _pointMatrixSizeX; ix++) {
+        for (int iy = 0; iy < _pointMatrixSizeY; iy++) {
+            for (int iz = 0; iz < _pointMatrixSizeZ; iz++) {
+                //Trangle corners
+                glm::vec3 pointCenter = glm::vec3((ix * _edgeLength) + _minX, (iy * _edgeLength) + _minY, (iz * _edgeLength) + _minZ);
+                float solutionPointRadius = 0.03f;
+                RenderVertex cornerXp = RenderVertex(glm::vec3(pointCenter + glm::vec3(solutionPointRadius, 0, 0)), 0.5f, 0.5f);
+                RenderVertex cornerXm = RenderVertex(glm::vec3(pointCenter + glm::vec3(-solutionPointRadius, 0, 0)), 0.5f, 0.5f);
+                RenderVertex cornerYp = RenderVertex(glm::vec3(pointCenter + glm::vec3(0, solutionPointRadius, 0)), 0.5f, 0.5f);
+                RenderVertex cornerYm = RenderVertex(glm::vec3(pointCenter + glm::vec3(0, -solutionPointRadius, 0)), 0.5f, 0.5f);
+                RenderVertex cornerZp = RenderVertex(glm::vec3(pointCenter + glm::vec3(0, 0, solutionPointRadius)), 0.5f, 0.5f);
+                RenderVertex cornerZm = RenderVertex(glm::vec3(pointCenter + glm::vec3(0, 0, -solutionPointRadius)), 0.5f, 0.5f);
+                //Create triangles
+                solutionTriangles.emplace_back(RenderTriangle(TextureType::WHITE, cornerXp, cornerYp, cornerZp));
+                solutionTriangles.emplace_back(RenderTriangle(TextureType::WHITE, cornerZp, cornerYp, cornerXm));
+                solutionTriangles.emplace_back(RenderTriangle(TextureType::WHITE, cornerZp, cornerYm, cornerXp));
+                solutionTriangles.emplace_back(RenderTriangle(TextureType::WHITE, cornerXm, cornerYm, cornerZp));
+                solutionTriangles.emplace_back(RenderTriangle(TextureType::WHITE, cornerZm, cornerYp, cornerXp));
+                solutionTriangles.emplace_back(RenderTriangle(TextureType::WHITE, cornerXm, cornerYp, cornerZm));
+                solutionTriangles.emplace_back(RenderTriangle(TextureType::WHITE, cornerXp, cornerYm, cornerZm));
+                solutionTriangles.emplace_back(RenderTriangle(TextureType::WHITE, cornerZm, cornerYm, cornerXm));
+            }
+        }
+    }
+
+    return solutionTriangles;
 }
 
 //private:
@@ -464,26 +493,23 @@ std::list<glm::ivec3> Solver::findCubesOnLine(const glm::ivec3 & point1, const g
     return cubes;
 }
 
-SystemOfEquations Solver::createSystemOfEquations(SolverPoint *** grid) const {
+MatrixSystemOfEquations Solver::createSystemOfEquations(SolverPoint *** grid) const {
     //Reserve memory
-    int numberOfVariables = (_pointMatrixSizeX+1)*(_pointMatrixSizeY+1)*(_pointMatrixSizeZ+1)*2;
-    std::cout << "Number of variables:" << numberOfVariables << std::endl;
-    SystemOfEquations systemOfEquations(numberOfVariables);
+    int numberOfVariables = (_pointMatrixSizeX+1)*(_pointMatrixSizeY+1)*(_pointMatrixSizeZ+1);
+    std::cout << "Number of variables: " << numberOfVariables << std::endl;
+    MatrixSystemOfEquations systemOfEquations(numberOfVariables);
 
     //Fill equations
     for (int i = 0; i < _pointMatrixSizeX+1; i++) {
         for (int j = 0; j < _pointMatrixSizeY+1; j++) {
             for (int k = 0; k < _pointMatrixSizeZ+1; k++) {
+                int actID = calculateVariableIndex(i,j,k);
                 if (grid[i][j][k].isSource()) {
                     //Source
                     const ComplexFloat & pressure = grid[i][j][k].getPressure();
-                    int actRealID = calculateVariableIndex(i,j,k,0);
-                    int actImagID = calculateVariableIndex(i,j,k,1);
 
-                    systemOfEquations.set(actRealID, actRealID, 1.f);
-                    systemOfEquations.setConstant(actRealID, pressure.real);
-                    systemOfEquations.set(actImagID, actImagID, 1.f);
-                    systemOfEquations.setConstant(actImagID, pressure.imag);
+                    systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f));
+                    systemOfEquations.setConstant(actID, pressure);
 
                 } else {
                     //Check borders
@@ -510,460 +536,201 @@ SystemOfEquations Solver::createSystemOfEquations(SolverPoint *** grid) const {
                     }
                     //Pre-calculate constants
                     float wallDerivativeFactor = _SOUND_SPEED/_angularFrequency/_edgeLength;
-                    float edgeDerivativeFactor = _SOUND_SPEED/_angularFrequency/(sqrt(2.f)*_edgeLength);
-                    float cornerDerivativeFactor = _SOUND_SPEED/_angularFrequency/(sqrt(3.f)*_edgeLength);
+                    float edgeDerivativeFactor = wallDerivativeFactor/sqrt(2.f);
+                    float cornerDerivativeFactor = wallDerivativeFactor/sqrt(3.f);
                     //Borders
                     if (xm) {
                         if (ym) {
                             if (zm) {
                                 //Corner XmYmZm
-                                int actRealID = calculateVariableIndex(i,j,k,0);
-                                int actImagID = calculateVariableIndex(i,j,k,1);
-
-                                systemOfEquations.set(actRealID, actRealID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i+1,j+1,k+1,1), actRealID, cornerDerivativeFactor);
-                                systemOfEquations.set(actImagID, actRealID, -cornerDerivativeFactor);
-
-                                systemOfEquations.set(actImagID, actImagID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i+1,j+1,k+1,0), actImagID, cornerDerivativeFactor);
-                                systemOfEquations.set(actRealID, actImagID, -cornerDerivativeFactor);
-
+                                systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f) + ComplexFloat(0.f, 1.f)*cornerDerivativeFactor);
+                                systemOfEquations.set(calculateVariableIndex(i+1,j+1,k+1), actID, ComplexFloat(0.f, 1.f)*(-1)*cornerDerivativeFactor);
                             } else if (zp) {
                                 //Corner XmYmZp
-                                int actRealID = calculateVariableIndex(i,j,k,0);
-                                int actImagID = calculateVariableIndex(i,j,k,1);
-
-                                systemOfEquations.set(actRealID, actRealID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i+1,j+1,k-1,1), actRealID, cornerDerivativeFactor);
-                                systemOfEquations.set(actImagID, actRealID, -cornerDerivativeFactor);
-
-                                systemOfEquations.set(actImagID, actImagID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i+1,j+1,k-1,0), actImagID, cornerDerivativeFactor);
-                                systemOfEquations.set(actRealID, actImagID, -cornerDerivativeFactor);
-
+                                systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f) + ComplexFloat(0.f, 1.f)*cornerDerivativeFactor);
+                                systemOfEquations.set(calculateVariableIndex(i+1,j+1,k-1), actID, ComplexFloat(0.f, 1.f)*(-1)*cornerDerivativeFactor);
                             } else {
                                 //Edge XmYm
-                                int actRealID = calculateVariableIndex(i,j,k,0);
-                                int actImagID = calculateVariableIndex(i,j,k,1);
-
-                                systemOfEquations.set(actRealID, actRealID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i+1,j+1,k,1), actRealID, edgeDerivativeFactor);
-                                systemOfEquations.set(actImagID, actRealID, -edgeDerivativeFactor);
-
-                                systemOfEquations.set(actImagID, actImagID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i+1,j+1,k,0), actImagID, edgeDerivativeFactor);
-                                systemOfEquations.set(actRealID, actImagID, -edgeDerivativeFactor);
-
+                                systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f) + ComplexFloat(0.f, 1.f)*edgeDerivativeFactor);
+                                systemOfEquations.set(calculateVariableIndex(i+1,j+1,k), actID, ComplexFloat(0.f, 1.f)*(-1)*edgeDerivativeFactor);
                             }
                         } else if (yp) {
                             if (zm) {
                                 //Corner XmYpZm
-                                int actRealID = calculateVariableIndex(i,j,k,0);
-                                int actImagID = calculateVariableIndex(i,j,k,1);
-
-                                systemOfEquations.set(actRealID, actRealID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i+1,j-1,k+1,1), actRealID, cornerDerivativeFactor);
-                                systemOfEquations.set(actImagID, actRealID, -cornerDerivativeFactor);
-
-                                systemOfEquations.set(actImagID, actImagID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i+1,j-1,k+1,0), actImagID, cornerDerivativeFactor);
-                                systemOfEquations.set(actRealID, actImagID, -cornerDerivativeFactor);
-
+                                systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f) + ComplexFloat(0.f, 1.f)*cornerDerivativeFactor);
+                                systemOfEquations.set(calculateVariableIndex(i+1,j-1,k+1), actID, ComplexFloat(0.f, 1.f)*(-1)*cornerDerivativeFactor);
                             } else if (zp) {
                                 //Corner XmYpZp
-                                int actRealID = calculateVariableIndex(i,j,k,0);
-                                int actImagID = calculateVariableIndex(i,j,k,1);
-
-                                systemOfEquations.set(actRealID, actRealID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i+1,j-1,k-1,1), actRealID, cornerDerivativeFactor);
-                                systemOfEquations.set(actImagID, actRealID, -cornerDerivativeFactor);
-
-                                systemOfEquations.set(actImagID, actImagID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i+1,j-1,k-1,0), actImagID, cornerDerivativeFactor);
-                                systemOfEquations.set(actRealID, actImagID, -cornerDerivativeFactor);
-
+                                systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f) + ComplexFloat(0.f, 1.f)*cornerDerivativeFactor);
+                                systemOfEquations.set(calculateVariableIndex(i+1,j-1,k-1), actID, ComplexFloat(0.f, 1.f)*(-1)*cornerDerivativeFactor);
                             } else {
                                 //Edge XmYp
-                                int actRealID = calculateVariableIndex(i,j,k,0);
-                                int actImagID = calculateVariableIndex(i,j,k,1);
-
-                                systemOfEquations.set(actRealID, actRealID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i+1,j-1,k,1), actRealID, edgeDerivativeFactor);
-                                systemOfEquations.set(actImagID, actRealID, -edgeDerivativeFactor);
-
-                                systemOfEquations.set(actImagID, actImagID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i+1,j-1,k,0), actImagID, edgeDerivativeFactor);
-                                systemOfEquations.set(actRealID, actImagID, -edgeDerivativeFactor);
-
+                                systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f) + ComplexFloat(0.f, 1.f)*edgeDerivativeFactor);
+                                systemOfEquations.set(calculateVariableIndex(i+1,j-1,k), actID, ComplexFloat(0.f, 1.f)*(-1)*edgeDerivativeFactor);
                             }
                         } else {
                             if (zm) {
                                 //Edge XmZm
-                                int actRealID = calculateVariableIndex(i,j,k,0);
-                                int actImagID = calculateVariableIndex(i,j,k,1);
-
-                                systemOfEquations.set(actRealID, actRealID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i+1,j,k+1,1), actRealID, edgeDerivativeFactor);
-                                systemOfEquations.set(actImagID, actRealID, -edgeDerivativeFactor);
-
-                                systemOfEquations.set(actImagID, actImagID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i+1,j,k+1,0), actImagID, edgeDerivativeFactor);
-                                systemOfEquations.set(actRealID, actImagID, -edgeDerivativeFactor);
-
+                                systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f) + ComplexFloat(0.f, 1.f)*edgeDerivativeFactor);
+                                systemOfEquations.set(calculateVariableIndex(i+1,j,k+1), actID, ComplexFloat(0.f, 1.f)*(-1)*edgeDerivativeFactor);
                             } else if (zp) {
                                 //Edge XmZp
-                                int actRealID = calculateVariableIndex(i,j,k,0);
-                                int actImagID = calculateVariableIndex(i,j,k,1);
-
-                                systemOfEquations.set(actRealID, actRealID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i+1,j,k-1,1), actRealID, edgeDerivativeFactor);
-                                systemOfEquations.set(actImagID, actRealID, -edgeDerivativeFactor);
-
-                                systemOfEquations.set(actImagID, actImagID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i+1,j,k-1,0), actImagID, edgeDerivativeFactor);
-                                systemOfEquations.set(actRealID, actImagID, -edgeDerivativeFactor);
-
+                                systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f) + ComplexFloat(0.f, 1.f)*edgeDerivativeFactor);
+                                systemOfEquations.set(calculateVariableIndex(i+1,j,k-1), actID, ComplexFloat(0.f, 1.f)*(-1)*edgeDerivativeFactor);
                             } else {
                                 //Wall Xm
-                                int actRealID = calculateVariableIndex(i,j,k,0);
-                                int actImagID = calculateVariableIndex(i,j,k,1);
-
-                                systemOfEquations.set(actRealID, actRealID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i+1,j,k,1), actRealID, wallDerivativeFactor);
-                                systemOfEquations.set(actImagID, actRealID, -wallDerivativeFactor);
-
-                                systemOfEquations.set(actImagID, actImagID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i+1,j,k,0), actImagID, wallDerivativeFactor);
-                                systemOfEquations.set(actRealID, actImagID, -wallDerivativeFactor);
-
+                                systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f) + ComplexFloat(0.f, 1.f)*wallDerivativeFactor);
+                                systemOfEquations.set(calculateVariableIndex(i+1,j,k), actID, ComplexFloat(0.f, 1.f)*(-1)*wallDerivativeFactor);
                             }
                         }
                     } else if (xp) {
                         if (ym) {
                             if (zm) {
                                 //Corner XpYmZm
-                                int actRealID = calculateVariableIndex(i,j,k,0);
-                                int actImagID = calculateVariableIndex(i,j,k,1);
-
-                                systemOfEquations.set(actRealID, actRealID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i-1,j+1,k+1,1), actRealID, cornerDerivativeFactor);
-                                systemOfEquations.set(actImagID, actRealID, -cornerDerivativeFactor);
-
-                                systemOfEquations.set(actImagID, actImagID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i-1,j+1,k+1,0), actImagID, cornerDerivativeFactor);
-                                systemOfEquations.set(actRealID, actImagID, -cornerDerivativeFactor);
-
+                                systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f) + ComplexFloat(0.f, 1.f)*cornerDerivativeFactor);
+                                systemOfEquations.set(calculateVariableIndex(i-1,j+1,k+1), actID, ComplexFloat(0.f, 1.f)*(-1)*cornerDerivativeFactor);
                             } else if (zp) {
                                 //Corner XpYmZp
-                                int actRealID = calculateVariableIndex(i,j,k,0);
-                                int actImagID = calculateVariableIndex(i,j,k,1);
-
-                                systemOfEquations.set(actRealID, actRealID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i-1,j+1,k-1,1), actRealID, cornerDerivativeFactor);
-                                systemOfEquations.set(actImagID, actRealID, -cornerDerivativeFactor);
-
-                                systemOfEquations.set(actImagID, actImagID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i-1,j+1,k-1,0), actImagID, cornerDerivativeFactor);
-                                systemOfEquations.set(actRealID, actImagID, -cornerDerivativeFactor);
-
+                                systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f) + ComplexFloat(0.f, 1.f)*cornerDerivativeFactor);
+                                systemOfEquations.set(calculateVariableIndex(i-1,j+1,k-1), actID, ComplexFloat(0.f, 1.f)*(-1)*cornerDerivativeFactor);
                             } else {
                                 //Edge XpYm
-                                int actRealID = calculateVariableIndex(i,j,k,0);
-                                int actImagID = calculateVariableIndex(i,j,k,1);
-
-                                systemOfEquations.set(actRealID, actRealID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i-1,j+1,k,1), actRealID, edgeDerivativeFactor);
-                                systemOfEquations.set(actImagID, actRealID, -edgeDerivativeFactor);
-
-                                systemOfEquations.set(actImagID, actImagID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i-1,j+1,k,0), actImagID, edgeDerivativeFactor);
-                                systemOfEquations.set(actRealID, actImagID, -edgeDerivativeFactor);
-
+                                systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f) + ComplexFloat(0.f, 1.f)*edgeDerivativeFactor);
+                                systemOfEquations.set(calculateVariableIndex(i-1,j+1,k), actID, ComplexFloat(0.f, 1.f)*(-1)*edgeDerivativeFactor);
                             }
                         } else if (yp) {
                             if (zm) {
                                 //Corner XpYpZm
-                                int actRealID = calculateVariableIndex(i,j,k,0);
-                                int actImagID = calculateVariableIndex(i,j,k,1);
-
-                                systemOfEquations.set(actRealID, actRealID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i-1,j-1,k+1,1), actRealID, cornerDerivativeFactor);
-                                systemOfEquations.set(actImagID, actRealID, -cornerDerivativeFactor);
-
-                                systemOfEquations.set(actImagID, actImagID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i-1,j-1,k+1,0), actImagID, cornerDerivativeFactor);
-                                systemOfEquations.set(actRealID, actImagID, -cornerDerivativeFactor);
-
+                                systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f) + ComplexFloat(0.f, 1.f)*cornerDerivativeFactor);
+                                systemOfEquations.set(calculateVariableIndex(i-1,j-1,k+1), actID, ComplexFloat(0.f, 1.f)*(-1)*cornerDerivativeFactor);
                             } else if (zp) {
                                 //Corner XpYpZp
-                                int actRealID = calculateVariableIndex(i,j,k,0);
-                                int actImagID = calculateVariableIndex(i,j,k,1);
-
-                                systemOfEquations.set(actRealID, actRealID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i-1,j-1,k-1,1), actRealID, cornerDerivativeFactor);
-                                systemOfEquations.set(actImagID, actRealID, -cornerDerivativeFactor);
-
-                                systemOfEquations.set(actImagID, actImagID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i-1,j-1,k-1,0), actImagID, cornerDerivativeFactor);
-                                systemOfEquations.set(actRealID, actImagID, -cornerDerivativeFactor);
-
+                                systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f) + ComplexFloat(0.f, 1.f)*cornerDerivativeFactor);
+                                systemOfEquations.set(calculateVariableIndex(i-1,j-1,k-1), actID, ComplexFloat(0.f, 1.f)*(-1)*cornerDerivativeFactor);
                             } else {
                                 //Edge XpYp
-                                int actRealID = calculateVariableIndex(i,j,k,0);
-                                int actImagID = calculateVariableIndex(i,j,k,1);
-
-                                systemOfEquations.set(actRealID, actRealID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i-1,j-1,k,1), actRealID, edgeDerivativeFactor);
-                                systemOfEquations.set(actImagID, actRealID, -edgeDerivativeFactor);
-
-                                systemOfEquations.set(actImagID, actImagID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i-1,j-1,k,0), actImagID, edgeDerivativeFactor);
-                                systemOfEquations.set(actRealID, actImagID, -edgeDerivativeFactor);
-
+                                systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f) + ComplexFloat(0.f, 1.f)*edgeDerivativeFactor);
+                                systemOfEquations.set(calculateVariableIndex(i-1,j-1,k), actID, ComplexFloat(0.f, 1.f)*(-1)*edgeDerivativeFactor);
                             }
                         } else {
                             if (zm) {
                                 //Edge XpZm
-                                int actRealID = calculateVariableIndex(i,j,k,0);
-                                int actImagID = calculateVariableIndex(i,j,k,1);
-
-                                systemOfEquations.set(actRealID, actRealID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i-1,j,k+1,1), actRealID, edgeDerivativeFactor);
-                                systemOfEquations.set(actImagID, actRealID, -edgeDerivativeFactor);
-
-                                systemOfEquations.set(actImagID, actImagID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i-1,j,k+1,0), actImagID, edgeDerivativeFactor);
-                                systemOfEquations.set(actRealID, actImagID, -edgeDerivativeFactor);
-
+                                systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f) + ComplexFloat(0.f, 1.f)*edgeDerivativeFactor);
+                                systemOfEquations.set(calculateVariableIndex(i-1,j,k+1), actID, ComplexFloat(0.f, 1.f)*(-1)*edgeDerivativeFactor);
                             } else if (zp) {
                                 //Edge XpZp
-                                int actRealID = calculateVariableIndex(i,j,k,0);
-                                int actImagID = calculateVariableIndex(i,j,k,1);
-
-                                systemOfEquations.set(actRealID, actRealID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i-1,j,k-1,1), actRealID, edgeDerivativeFactor);
-                                systemOfEquations.set(actImagID, actRealID, -edgeDerivativeFactor);
-
-                                systemOfEquations.set(actImagID, actImagID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i-1,j,k-1,0), actImagID, edgeDerivativeFactor);
-                                systemOfEquations.set(actRealID, actImagID, -edgeDerivativeFactor);
-
+                                systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f) + ComplexFloat(0.f, 1.f)*edgeDerivativeFactor);
+                                systemOfEquations.set(calculateVariableIndex(i-1,j,k-1), actID, ComplexFloat(0.f, 1.f)*(-1)*edgeDerivativeFactor);
                             } else {
                                 //Wall Xp
-                                int actRealID = calculateVariableIndex(i,j,k,0);
-                                int actImagID = calculateVariableIndex(i,j,k,1);
-
-                                systemOfEquations.set(actRealID, actRealID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i-1,j,k,1), actRealID, wallDerivativeFactor);
-                                systemOfEquations.set(actImagID, actRealID, -wallDerivativeFactor);
-
-                                systemOfEquations.set(actImagID, actImagID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i-1,j,k,0), actImagID, wallDerivativeFactor);
-                                systemOfEquations.set(actRealID, actImagID, -wallDerivativeFactor);
-
+                                systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f) + ComplexFloat(0.f, 1.f)*wallDerivativeFactor);
+                                systemOfEquations.set(calculateVariableIndex(i-1,j,k), actID, ComplexFloat(0.f, 1.f)*(-1)*wallDerivativeFactor);
                             }
                         }
                     } else {
                         if (ym) {
                             if (zm) {
                                 //Edge YmZm
-                                int actRealID = calculateVariableIndex(i,j,k,0);
-                                int actImagID = calculateVariableIndex(i,j,k,1);
-
-                                systemOfEquations.set(actRealID, actRealID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i,j+1,k+1,1), actRealID, edgeDerivativeFactor);
-                                systemOfEquations.set(actImagID, actRealID, -edgeDerivativeFactor);
-
-                                systemOfEquations.set(actImagID, actImagID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i,j+1,k+1,0), actImagID, edgeDerivativeFactor);
-                                systemOfEquations.set(actRealID, actImagID, -edgeDerivativeFactor);
-
+                                systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f) + ComplexFloat(0.f, 1.f)*edgeDerivativeFactor);
+                                systemOfEquations.set(calculateVariableIndex(i,j+1,k+1), actID, ComplexFloat(0.f, 1.f)*(-1)*edgeDerivativeFactor);
                             } else if (zp) {
                                 //Edge YmZp
-                                int actRealID = calculateVariableIndex(i,j,k,0);
-                                int actImagID = calculateVariableIndex(i,j,k,1);
-
-                                systemOfEquations.set(actRealID, actRealID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i,j+1,k-1,1), actRealID, edgeDerivativeFactor);
-                                systemOfEquations.set(actImagID, actRealID, -edgeDerivativeFactor);
-
-                                systemOfEquations.set(actImagID, actImagID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i,j+1,k-1,0), actImagID, edgeDerivativeFactor);
-                                systemOfEquations.set(actRealID, actImagID, -edgeDerivativeFactor);
-
+                                systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f) + ComplexFloat(0.f, 1.f)*edgeDerivativeFactor);
+                                systemOfEquations.set(calculateVariableIndex(i,j+1,k-1), actID, ComplexFloat(0.f, 1.f)*(-1)*edgeDerivativeFactor);
                             } else {
                                 //Wall Ym
-                                int actRealID = calculateVariableIndex(i,j,k,0);
-                                int actImagID = calculateVariableIndex(i,j,k,1);
-
-                                systemOfEquations.set(actRealID, actRealID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i,j+1,k,1), actRealID, wallDerivativeFactor);
-                                systemOfEquations.set(actImagID, actRealID, -wallDerivativeFactor);
-
-                                systemOfEquations.set(actImagID, actImagID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i,j+1,k,0), actImagID, wallDerivativeFactor);
-                                systemOfEquations.set(actRealID, actImagID, -wallDerivativeFactor);
-
+                                systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f) + ComplexFloat(0.f, 1.f)*wallDerivativeFactor);
+                                systemOfEquations.set(calculateVariableIndex(i,j+1,k), actID, ComplexFloat(0.f, 1.f)*(-1)*wallDerivativeFactor);
                             }
                         } else if (yp) {
                             if (zm) {
                                 //Edge YpZm
-                                int actRealID = calculateVariableIndex(i,j,k,0);
-                                int actImagID = calculateVariableIndex(i,j,k,1);
-
-                                systemOfEquations.set(actRealID, actRealID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i,j-1,k+1,1), actRealID, edgeDerivativeFactor);
-                                systemOfEquations.set(actImagID, actRealID, -edgeDerivativeFactor);
-
-                                systemOfEquations.set(actImagID, actImagID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i,j-1,k+1,0), actImagID, edgeDerivativeFactor);
-                                systemOfEquations.set(actRealID, actImagID, -edgeDerivativeFactor);
-
+                                systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f) + ComplexFloat(0.f, 1.f)*edgeDerivativeFactor);
+                                systemOfEquations.set(calculateVariableIndex(i,j-1,k+1), actID, ComplexFloat(0.f, 1.f)*(-1)*edgeDerivativeFactor);
                             } else if (zp) {
                                 //Edge YpZp
-                                int actRealID = calculateVariableIndex(i,j,k,0);
-                                int actImagID = calculateVariableIndex(i,j,k,1);
-
-                                systemOfEquations.set(actRealID, actRealID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i,j-1,k-1,1), actRealID, edgeDerivativeFactor);
-                                systemOfEquations.set(actImagID, actRealID, -edgeDerivativeFactor);
-
-                                systemOfEquations.set(actImagID, actImagID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i,j-1,k-1,0), actImagID, edgeDerivativeFactor);
-                                systemOfEquations.set(actRealID, actImagID, -edgeDerivativeFactor);
-
+                                systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f) + ComplexFloat(0.f, 1.f)*edgeDerivativeFactor);
+                                systemOfEquations.set(calculateVariableIndex(i,j-1,k-1), actID, ComplexFloat(0.f, 1.f)*(-1)*edgeDerivativeFactor);
                             } else {
                                 //Wall Yp
-                                int actRealID = calculateVariableIndex(i,j,k,0);
-                                int actImagID = calculateVariableIndex(i,j,k,1);
-
-                                systemOfEquations.set(actRealID, actRealID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i,j-1,k,1), actRealID, wallDerivativeFactor);
-                                systemOfEquations.set(actImagID, actRealID, -wallDerivativeFactor);
-
-                                systemOfEquations.set(actImagID, actImagID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i,j-1,k,0), actImagID, wallDerivativeFactor);
-                                systemOfEquations.set(actRealID, actImagID, -wallDerivativeFactor);
-
+                                systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f) + ComplexFloat(0.f, 1.f)*wallDerivativeFactor);
+                                systemOfEquations.set(calculateVariableIndex(i,j-1,k), actID, ComplexFloat(0.f, 1.f)*(-1)*wallDerivativeFactor);
                             }
                         } else {
                             if (zm) {
                                 //Wall Zm
-                                int actRealID = calculateVariableIndex(i,j,k,0);
-                                int actImagID = calculateVariableIndex(i,j,k,1);
-
-                                systemOfEquations.set(actRealID, actRealID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i,j,k+1,1), actRealID, wallDerivativeFactor);
-                                systemOfEquations.set(actImagID, actRealID, -wallDerivativeFactor);
-
-                                systemOfEquations.set(actImagID, actImagID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i,j,k+1,0), actImagID, wallDerivativeFactor);
-                                systemOfEquations.set(actRealID, actImagID, -wallDerivativeFactor);
-
+                                systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f) + ComplexFloat(0.f, 1.f)*wallDerivativeFactor);
+                                systemOfEquations.set(calculateVariableIndex(i,j,k+1), actID, ComplexFloat(0.f, 1.f)*(-1)*wallDerivativeFactor);
                             } else if (zp) {
                                 //Wall Zp
-                                int actRealID = calculateVariableIndex(i,j,k,0);
-                                int actImagID = calculateVariableIndex(i,j,k,1);
-
-                                systemOfEquations.set(actRealID, actRealID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i,j,k-1,1), actRealID, wallDerivativeFactor);
-                                systemOfEquations.set(actImagID, actRealID, -wallDerivativeFactor);
-
-                                systemOfEquations.set(actImagID, actImagID, 1);
-                                systemOfEquations.set(calculateVariableIndex(i,j,k-1,0), actImagID, wallDerivativeFactor);
-                                systemOfEquations.set(actRealID, actImagID, -wallDerivativeFactor);
-
+                                systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f) + ComplexFloat(0.f, 1.f)*wallDerivativeFactor);
+                                systemOfEquations.set(calculateVariableIndex(i,j,k-1), actID, ComplexFloat(0.f, 1.f)*(-1)*wallDerivativeFactor);
                             } else {
-                                //Not a border
-                                glm::vec3 direction = grid[i][j][k].getNormalVector();
-                                if (direction != glm::vec3(0,0,0)) {
-                                    //Reflection
-                                    //Scale normal vector
-                                    direction *= _edgeLength;
-                                    //Calculate distances from walls
-                                    float distXs = direction.x;
-                                    float distYs = direction.y;
-                                    float distZs = direction.z;
-                                    float distXo = _edgeLength - direction.x;
-                                    float distYo = _edgeLength - direction.y;
-                                    float distZo = _edgeLength - direction.z;
-                                    //Calculate distances from corners
-                                    float distXsYsZs = max(abs(distXs), abs(distYs), abs(distZs));
-                                    float distXoYsZs = max(abs(distXo), abs(distYs), abs(distZs));
-                                    float distXsYoZs = max(abs(distXs), abs(distYo), abs(distZs));
-                                    float distXoYoZs = max(abs(distXo), abs(distYo), abs(distZs));
-                                    float distXsYsZo = max(abs(distXs), abs(distYs), abs(distZo));
-                                    float distXoYsZo = max(abs(distXo), abs(distYs), abs(distZo));
-                                    float distXsYoZo = max(abs(distXs), abs(distYo), abs(distZo));
-                                    float distXoYoZo = max(abs(distXo), abs(distYo), abs(distZo));
-                                    //Calculate point factors
-                                    float factXsYsZs = 1 - distXsYsZs;
-                                    float factXoYsZs = 1 - distXoYsZs;
-                                    float factXsYoZs = 1 - distXsYoZs;
-                                    float factXoYoZs = 1 - distXoYoZs;
-                                    float factXsYsZo = 1 - distXsYsZo;
-                                    float factXoYsZo = 1 - distXoYsZo;
-                                    float factXsYoZo = 1 - distXsYoZo;
-                                    float factXoYoZo = 1 - distXoYoZo;
-                                    float denominator = 2*_edgeLength*(factXsYsZs+factXoYsZs+factXsYoZs+factXoYoZs+
-                                            factXsYsZo+factXoYsZo+factXsYoZo+factXoYoZo);
-                                    //Set variable factors
-                                    int actRealID = calculateVariableIndex(i,j,k,0);
-                                    systemOfEquations.set(calculateVariableIndex(i+pseudoSignum(distXs),j,k,0), actRealID, factXoYsZs/denominator);
-                                    systemOfEquations.set(calculateVariableIndex(i-pseudoSignum(distXs),j,k,0), actRealID, -factXoYsZs/denominator);
-                                    systemOfEquations.set(calculateVariableIndex(i,j+pseudoSignum(distYs),k,0), actRealID, factXsYoZs/denominator);
-                                    systemOfEquations.set(calculateVariableIndex(i,j-pseudoSignum(distYs),k,0), actRealID, -factXsYoZs/denominator);
-                                    systemOfEquations.set(calculateVariableIndex(i,j,k+pseudoSignum(distZs),0), actRealID, factXsYsZo/denominator);
-                                    systemOfEquations.set(calculateVariableIndex(i,j,k-pseudoSignum(distZs),0), actRealID, -factXsYsZo/denominator);
-                                    systemOfEquations.set(calculateVariableIndex(i+pseudoSignum(distXs),j+pseudoSignum(distYs),k,0), actRealID, factXoYoZs/denominator);
-                                    systemOfEquations.set(calculateVariableIndex(i-pseudoSignum(distXs),j-pseudoSignum(distYs),k,0), actRealID, -factXoYoZs/denominator);
-                                    systemOfEquations.set(calculateVariableIndex(i+pseudoSignum(distXs),j,k+pseudoSignum(distZs),0), actRealID, factXoYsZo/denominator);
-                                    systemOfEquations.set(calculateVariableIndex(i-pseudoSignum(distXs),j,k-pseudoSignum(distZs),0), actRealID, -factXoYsZo/denominator);
-                                    systemOfEquations.set(calculateVariableIndex(i,j+pseudoSignum(distYs),k+pseudoSignum(distZs),0), actRealID, factXsYoZo/denominator);
-                                    systemOfEquations.set(calculateVariableIndex(i,j-pseudoSignum(distYs),k-pseudoSignum(distZs),0), actRealID, -factXsYoZo/denominator);
-                                    systemOfEquations.set(calculateVariableIndex(i+pseudoSignum(distXs),j+pseudoSignum(distYs),k+pseudoSignum(distZs),0), actRealID, factXoYoZo/denominator);
-                                    systemOfEquations.set(calculateVariableIndex(i-pseudoSignum(distXs),j-pseudoSignum(distYs),k-pseudoSignum(distZs),0), actRealID, -factXoYoZo/denominator);
-
-                                    int actImagID = calculateVariableIndex(i,j,k,1);
-                                    systemOfEquations.set(calculateVariableIndex(i+pseudoSignum(distXs),j,k,1), actImagID, factXoYsZs/denominator);
-                                    systemOfEquations.set(calculateVariableIndex(i-pseudoSignum(distXs),j,k,1), actImagID, -factXoYsZs/denominator);
-                                    systemOfEquations.set(calculateVariableIndex(i,j+pseudoSignum(distYs),k,1), actImagID, factXsYoZs/denominator);
-                                    systemOfEquations.set(calculateVariableIndex(i,j-pseudoSignum(distYs),k,1), actImagID, -factXsYoZs/denominator);
-                                    systemOfEquations.set(calculateVariableIndex(i,j,k+pseudoSignum(distZs),1), actImagID, factXsYsZo/denominator);
-                                    systemOfEquations.set(calculateVariableIndex(i,j,k-pseudoSignum(distZs),1), actImagID, -factXsYsZo/denominator);
-                                    systemOfEquations.set(calculateVariableIndex(i+pseudoSignum(distXs),j+pseudoSignum(distYs),k,1), actImagID, factXoYoZs/denominator);
-                                    systemOfEquations.set(calculateVariableIndex(i-pseudoSignum(distXs),j-pseudoSignum(distYs),k,1), actImagID, -factXoYoZs/denominator);
-                                    systemOfEquations.set(calculateVariableIndex(i+pseudoSignum(distXs),j,k+pseudoSignum(distZs),1), actImagID, factXoYsZo/denominator);
-                                    systemOfEquations.set(calculateVariableIndex(i-pseudoSignum(distXs),j,k-pseudoSignum(distZs),1), actImagID, -factXoYsZo/denominator);
-                                    systemOfEquations.set(calculateVariableIndex(i,j+pseudoSignum(distYs),k+pseudoSignum(distZs),1), actImagID, factXsYoZo/denominator);
-                                    systemOfEquations.set(calculateVariableIndex(i,j-pseudoSignum(distYs),k-pseudoSignum(distZs),1), actImagID, -factXsYoZo/denominator);
-                                    systemOfEquations.set(calculateVariableIndex(i+pseudoSignum(distXs),j+pseudoSignum(distYs),k+pseudoSignum(distZs),1), actImagID, factXoYoZo/denominator);
-                                    systemOfEquations.set(calculateVariableIndex(i-pseudoSignum(distXs),j-pseudoSignum(distYs),k-pseudoSignum(distZs),1), actImagID, -factXoYoZo/denominator);
-
-                                } else {
+//                                //Not a border
+//                                glm::vec3 direction = grid[i][j][k].getNormalVector();
+//                                if (direction != glm::vec3(0,0,0)) {
+//                                    //Reflection
+//                                    //Scale normal vector
+//                                    direction *= _edgeLength;
+//                                    //Calculate distances from walls
+//                                    float distXs = direction.x;
+//                                    float distYs = direction.y;
+//                                    float distZs = direction.z;
+//                                    float distXo = _edgeLength - direction.x;
+//                                    float distYo = _edgeLength - direction.y;
+//                                    float distZo = _edgeLength - direction.z;
+//                                    //Calculate distances from corners
+//                                    float distXsYsZs = max(abs(distXs), abs(distYs), abs(distZs));
+//                                    float distXoYsZs = max(abs(distXo), abs(distYs), abs(distZs));
+//                                    float distXsYoZs = max(abs(distXs), abs(distYo), abs(distZs));
+//                                    float distXoYoZs = max(abs(distXo), abs(distYo), abs(distZs));
+//                                    float distXsYsZo = max(abs(distXs), abs(distYs), abs(distZo));
+//                                    float distXoYsZo = max(abs(distXo), abs(distYs), abs(distZo));
+//                                    float distXsYoZo = max(abs(distXs), abs(distYo), abs(distZo));
+//                                    float distXoYoZo = max(abs(distXo), abs(distYo), abs(distZo));
+//                                    //Calculate point factors
+//                                    float factXsYsZs = 1 - distXsYsZs;
+//                                    float factXoYsZs = 1 - distXoYsZs;
+//                                    float factXsYoZs = 1 - distXsYoZs;
+//                                    float factXoYoZs = 1 - distXoYoZs;
+//                                    float factXsYsZo = 1 - distXsYsZo;
+//                                    float factXoYsZo = 1 - distXoYsZo;
+//                                    float factXsYoZo = 1 - distXsYoZo;
+//                                    float factXoYoZo = 1 - distXoYoZo;
+//                                    float denominator = 2*_edgeLength*(factXsYsZs+factXoYsZs+factXsYoZs+factXoYoZs+
+//                                            factXsYsZo+factXoYsZo+factXsYoZo+factXoYoZo);
+//                                    //Set variable factors
+//                                    systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f)*factXsYsZs/denominator - ComplexFloat(1.f, 0.f));
+//                                    systemOfEquations.set(calculateVariableIndex(i+pseudoSignum(distXs),j,k), actID, ComplexFloat(1.f, 0.f)*factXoYsZs/denominator);
+////                                    systemOfEquations.set(calculateVariableIndex(i-pseudoSignum(distXs),j,k), actID, ComplexFloat(1.f, 0.f)*-factXoYsZs/denominator);
+//                                    systemOfEquations.set(calculateVariableIndex(i,j+pseudoSignum(distYs),k), actID, ComplexFloat(1.f, 0.f)*factXsYoZs/denominator);
+////                                    systemOfEquations.set(calculateVariableIndex(i,j-pseudoSignum(distYs),k), actID, ComplexFloat(1.f, 0.f)*-factXsYoZs/denominator);
+//                                    systemOfEquations.set(calculateVariableIndex(i,j,k+pseudoSignum(distZs)), actID, ComplexFloat(1.f, 0.f)*factXsYsZo/denominator);
+////                                    systemOfEquations.set(calculateVariableIndex(i,j,k-pseudoSignum(distZs)), actID, ComplexFloat(1.f, 0.f)*-factXsYsZo/denominator);
+//                                    systemOfEquations.set(calculateVariableIndex(i+pseudoSignum(distXs),j+pseudoSignum(distYs),k), actID, ComplexFloat(1.f, 0.f)*factXoYoZs/denominator);
+////                                    systemOfEquations.set(calculateVariableIndex(i-pseudoSignum(distXs),j-pseudoSignum(distYs),k), actID, ComplexFloat(1.f, 0.f)*-factXoYoZs/denominator);
+//                                    systemOfEquations.set(calculateVariableIndex(i+pseudoSignum(distXs),j,k+pseudoSignum(distZs)), actID, ComplexFloat(1.f, 0.f)*factXoYsZo/denominator);
+////                                    systemOfEquations.set(calculateVariableIndex(i-pseudoSignum(distXs),j,k-pseudoSignum(distZs)), actID, ComplexFloat(1.f, 0.f)*-factXoYsZo/denominator);
+//                                    systemOfEquations.set(calculateVariableIndex(i,j+pseudoSignum(distYs),k+pseudoSignum(distZs)), actID, ComplexFloat(1.f, 0.f)*factXsYoZo/denominator);
+////                                    systemOfEquations.set(calculateVariableIndex(i,j-pseudoSignum(distYs),k-pseudoSignum(distZs)), actID, ComplexFloat(1.f, 0.f)*-factXsYoZo/denominator);
+//                                    systemOfEquations.set(calculateVariableIndex(i+pseudoSignum(distXs),j+pseudoSignum(distYs),k+pseudoSignum(distZs)), actID, ComplexFloat(1.f, 0.f)*factXoYoZo/denominator);
+////                                    systemOfEquations.set(calculateVariableIndex(i-pseudoSignum(distXs),j-pseudoSignum(distYs),k-pseudoSignum(distZs)), actID, ComplexFloat(1.f, 0.f)*-factXoYoZo/denominator);
+//
+//                                } else {
                                     //Helmholtz equation
-                                    int actRealID = calculateVariableIndex(i,j,k,0);
-                                    systemOfEquations.set(calculateVariableIndex(i+1,j,k,0), actRealID, 1);
-                                    systemOfEquations.set(calculateVariableIndex(i-1,j,k,0), actRealID, 1);
-                                    systemOfEquations.set(calculateVariableIndex(i,j+1,k,0), actRealID, 1);
-                                    systemOfEquations.set(calculateVariableIndex(i,j-1,k,0), actRealID, 1);
-                                    systemOfEquations.set(calculateVariableIndex(i,j,k+1,0), actRealID, 1);
-                                    systemOfEquations.set(calculateVariableIndex(i,j,k-1,0), actRealID, 1);
-                                    systemOfEquations.set(actRealID, actRealID, _edgeLength*_edgeLength*_waveLength*_waveLength - 6);
-
-                                    int actImagID = calculateVariableIndex(i,j,k,1);
-                                    systemOfEquations.set(calculateVariableIndex(i+1,j,k,1), actImagID, 1);
-                                    systemOfEquations.set(calculateVariableIndex(i-1,j,k,1), actImagID, 1);
-                                    systemOfEquations.set(calculateVariableIndex(i,j+1,k,1), actImagID, 1);
-                                    systemOfEquations.set(calculateVariableIndex(i,j-1,k,1), actImagID, 1);
-                                    systemOfEquations.set(calculateVariableIndex(i,j,k+1,1), actImagID, 1);
-                                    systemOfEquations.set(calculateVariableIndex(i,j,k-1,1), actImagID, 1);
-                                    systemOfEquations.set(actImagID, actImagID, _edgeLength*_edgeLength*_waveLength*_waveLength - 6);
-                                }
+                                    systemOfEquations.set(calculateVariableIndex(i+1,j,k), actID, ComplexFloat(1.f, 0.f));
+                                    systemOfEquations.set(calculateVariableIndex(i-1,j,k), actID, ComplexFloat(1.f, 0.f));
+                                    systemOfEquations.set(calculateVariableIndex(i,j+1,k), actID, ComplexFloat(1.f, 0.f));
+                                    systemOfEquations.set(calculateVariableIndex(i,j-1,k), actID, ComplexFloat(1.f, 0.f));
+                                    systemOfEquations.set(calculateVariableIndex(i,j,k+1), actID, ComplexFloat(1.f, 0.f));
+                                    systemOfEquations.set(calculateVariableIndex(i,j,k-1), actID, ComplexFloat(1.f, 0.f));
+                                    systemOfEquations.set(actID, actID, ComplexFloat(_edgeLength*_edgeLength*_waveLength*_waveLength - 6, 0.f));
+//                                }
                             }
                         }
                     }
                 }
+//                systemOfEquations.print(actID);
             }
         }
     }
@@ -971,8 +738,8 @@ SystemOfEquations Solver::createSystemOfEquations(SolverPoint *** grid) const {
     return systemOfEquations;
 }
 
-int Solver::calculateVariableIndex(int i, int j, int k, int c) const {
-    return (_pointMatrixSizeX + 1)*((_pointMatrixSizeY + 1)*((_pointMatrixSizeZ + 1)*c + k) + j) + i;
+int Solver::calculateVariableIndex(int i, int j, int k) const {
+    return (_pointMatrixSizeX + 1)*((_pointMatrixSizeY + 1)*k + j) + i;
 }
 
 int Solver::pseudoSignum(float x) const {

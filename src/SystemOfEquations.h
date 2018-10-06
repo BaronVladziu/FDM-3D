@@ -6,20 +6,24 @@
 #define VULKAN_FDM_SYSTEMOFEQUATIONS_H
 
 #include "header.h"
+#include "Equation.h"
+#include "Matrix.h"
 
 
 class SystemOfEquations {
 
-    int _numberOfVariables;
-    float ** _matrix;
+    const int _numberOfVariables;
+    Equation * _equations;
 
 public:
-    SystemOfEquations(int numberOfVariables);
+    explicit SystemOfEquations(int numberOfVariables);
     int getNumberOfVariables() const;
-    float get(int x, int y) const;
-    void set(int x, int y, float value);
-    void setConstant(int y, float value);
-    void solve() const;
+    ComplexFloat get(int x, int y) const;
+    ComplexFloat getConstant(int y) const;
+    void set(int x, int y, ComplexFloat value);
+    void setConstant(int y, ComplexFloat value);
+    void solve();
+    void print(int y) const;
     ~SystemOfEquations();
 
 };

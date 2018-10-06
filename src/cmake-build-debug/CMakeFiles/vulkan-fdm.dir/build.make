@@ -187,6 +187,71 @@ CMakeFiles/vulkan-fdm.dir/ComplexFloat.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/vulkan-fdm.dir/ComplexFloat.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/baronvladziu/Projects/Vulkan/FDM-3D/src/ComplexFloat.cpp -o CMakeFiles/vulkan-fdm.dir/ComplexFloat.cpp.s
 
+CMakeFiles/vulkan-fdm.dir/SystemOfEquations.cpp.o: CMakeFiles/vulkan-fdm.dir/flags.make
+CMakeFiles/vulkan-fdm.dir/SystemOfEquations.cpp.o: ../SystemOfEquations.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/baronvladziu/Projects/Vulkan/FDM-3D/src/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/vulkan-fdm.dir/SystemOfEquations.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/vulkan-fdm.dir/SystemOfEquations.cpp.o -c /home/baronvladziu/Projects/Vulkan/FDM-3D/src/SystemOfEquations.cpp
+
+CMakeFiles/vulkan-fdm.dir/SystemOfEquations.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/vulkan-fdm.dir/SystemOfEquations.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/baronvladziu/Projects/Vulkan/FDM-3D/src/SystemOfEquations.cpp > CMakeFiles/vulkan-fdm.dir/SystemOfEquations.cpp.i
+
+CMakeFiles/vulkan-fdm.dir/SystemOfEquations.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/vulkan-fdm.dir/SystemOfEquations.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/baronvladziu/Projects/Vulkan/FDM-3D/src/SystemOfEquations.cpp -o CMakeFiles/vulkan-fdm.dir/SystemOfEquations.cpp.s
+
+CMakeFiles/vulkan-fdm.dir/Matrix.cpp.o: CMakeFiles/vulkan-fdm.dir/flags.make
+CMakeFiles/vulkan-fdm.dir/Matrix.cpp.o: ../Matrix.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/baronvladziu/Projects/Vulkan/FDM-3D/src/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/vulkan-fdm.dir/Matrix.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/vulkan-fdm.dir/Matrix.cpp.o -c /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Matrix.cpp
+
+CMakeFiles/vulkan-fdm.dir/Matrix.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/vulkan-fdm.dir/Matrix.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Matrix.cpp > CMakeFiles/vulkan-fdm.dir/Matrix.cpp.i
+
+CMakeFiles/vulkan-fdm.dir/Matrix.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/vulkan-fdm.dir/Matrix.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Matrix.cpp -o CMakeFiles/vulkan-fdm.dir/Matrix.cpp.s
+
+CMakeFiles/vulkan-fdm.dir/Equation.cpp.o: CMakeFiles/vulkan-fdm.dir/flags.make
+CMakeFiles/vulkan-fdm.dir/Equation.cpp.o: ../Equation.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/baronvladziu/Projects/Vulkan/FDM-3D/src/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/vulkan-fdm.dir/Equation.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/vulkan-fdm.dir/Equation.cpp.o -c /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Equation.cpp
+
+CMakeFiles/vulkan-fdm.dir/Equation.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/vulkan-fdm.dir/Equation.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Equation.cpp > CMakeFiles/vulkan-fdm.dir/Equation.cpp.i
+
+CMakeFiles/vulkan-fdm.dir/Equation.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/vulkan-fdm.dir/Equation.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Equation.cpp -o CMakeFiles/vulkan-fdm.dir/Equation.cpp.s
+
+CMakeFiles/vulkan-fdm.dir/EquationValue.cpp.o: CMakeFiles/vulkan-fdm.dir/flags.make
+CMakeFiles/vulkan-fdm.dir/EquationValue.cpp.o: ../EquationValue.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/baronvladziu/Projects/Vulkan/FDM-3D/src/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/vulkan-fdm.dir/EquationValue.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/vulkan-fdm.dir/EquationValue.cpp.o -c /home/baronvladziu/Projects/Vulkan/FDM-3D/src/EquationValue.cpp
+
+CMakeFiles/vulkan-fdm.dir/EquationValue.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/vulkan-fdm.dir/EquationValue.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/baronvladziu/Projects/Vulkan/FDM-3D/src/EquationValue.cpp > CMakeFiles/vulkan-fdm.dir/EquationValue.cpp.i
+
+CMakeFiles/vulkan-fdm.dir/EquationValue.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/vulkan-fdm.dir/EquationValue.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/baronvladziu/Projects/Vulkan/FDM-3D/src/EquationValue.cpp -o CMakeFiles/vulkan-fdm.dir/EquationValue.cpp.s
+
+CMakeFiles/vulkan-fdm.dir/MatrixSystemOfEquations.cpp.o: CMakeFiles/vulkan-fdm.dir/flags.make
+CMakeFiles/vulkan-fdm.dir/MatrixSystemOfEquations.cpp.o: ../MatrixSystemOfEquations.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/baronvladziu/Projects/Vulkan/FDM-3D/src/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/vulkan-fdm.dir/MatrixSystemOfEquations.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/vulkan-fdm.dir/MatrixSystemOfEquations.cpp.o -c /home/baronvladziu/Projects/Vulkan/FDM-3D/src/MatrixSystemOfEquations.cpp
+
+CMakeFiles/vulkan-fdm.dir/MatrixSystemOfEquations.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/vulkan-fdm.dir/MatrixSystemOfEquations.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/baronvladziu/Projects/Vulkan/FDM-3D/src/MatrixSystemOfEquations.cpp > CMakeFiles/vulkan-fdm.dir/MatrixSystemOfEquations.cpp.i
+
+CMakeFiles/vulkan-fdm.dir/MatrixSystemOfEquations.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/vulkan-fdm.dir/MatrixSystemOfEquations.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/baronvladziu/Projects/Vulkan/FDM-3D/src/MatrixSystemOfEquations.cpp -o CMakeFiles/vulkan-fdm.dir/MatrixSystemOfEquations.cpp.s
+
 # Object files for target vulkan-fdm
 vulkan__fdm_OBJECTS = \
 "CMakeFiles/vulkan-fdm.dir/main.cpp.o" \
@@ -198,7 +263,12 @@ vulkan__fdm_OBJECTS = \
 "CMakeFiles/vulkan-fdm.dir/Map.cpp.o" \
 "CMakeFiles/vulkan-fdm.dir/Solver.cpp.o" \
 "CMakeFiles/vulkan-fdm.dir/SolverPoint.cpp.o" \
-"CMakeFiles/vulkan-fdm.dir/ComplexFloat.cpp.o"
+"CMakeFiles/vulkan-fdm.dir/ComplexFloat.cpp.o" \
+"CMakeFiles/vulkan-fdm.dir/SystemOfEquations.cpp.o" \
+"CMakeFiles/vulkan-fdm.dir/Matrix.cpp.o" \
+"CMakeFiles/vulkan-fdm.dir/Equation.cpp.o" \
+"CMakeFiles/vulkan-fdm.dir/EquationValue.cpp.o" \
+"CMakeFiles/vulkan-fdm.dir/MatrixSystemOfEquations.cpp.o"
 
 # External object files for target vulkan-fdm
 vulkan__fdm_EXTERNAL_OBJECTS =
@@ -213,6 +283,11 @@ vulkan-fdm: CMakeFiles/vulkan-fdm.dir/Map.cpp.o
 vulkan-fdm: CMakeFiles/vulkan-fdm.dir/Solver.cpp.o
 vulkan-fdm: CMakeFiles/vulkan-fdm.dir/SolverPoint.cpp.o
 vulkan-fdm: CMakeFiles/vulkan-fdm.dir/ComplexFloat.cpp.o
+vulkan-fdm: CMakeFiles/vulkan-fdm.dir/SystemOfEquations.cpp.o
+vulkan-fdm: CMakeFiles/vulkan-fdm.dir/Matrix.cpp.o
+vulkan-fdm: CMakeFiles/vulkan-fdm.dir/Equation.cpp.o
+vulkan-fdm: CMakeFiles/vulkan-fdm.dir/EquationValue.cpp.o
+vulkan-fdm: CMakeFiles/vulkan-fdm.dir/MatrixSystemOfEquations.cpp.o
 vulkan-fdm: CMakeFiles/vulkan-fdm.dir/build.make
 vulkan-fdm: /usr/local/lib/libglfw3.a
 vulkan-fdm: /usr/lib/x86_64-linux-gnu/libXrandr.so
@@ -226,7 +301,7 @@ vulkan-fdm: /usr/lib/x86_64-linux-gnu/libX11.so
 vulkan-fdm: /usr/lib/x86_64-linux-gnu/libXext.so
 vulkan-fdm: ../../vulkan/x86_64/lib/libvulkan.so
 vulkan-fdm: CMakeFiles/vulkan-fdm.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/baronvladziu/Projects/Vulkan/FDM-3D/src/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking CXX executable vulkan-fdm"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/baronvladziu/Projects/Vulkan/FDM-3D/src/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Linking CXX executable vulkan-fdm"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/vulkan-fdm.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
