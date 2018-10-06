@@ -3,17 +3,33 @@
 
 CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../App.cpp
 CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../App.h
+CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../ComplexFloat.h
 CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../Map.h
 CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../MapLoader.h
+CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../Matrix.h
+CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../MatrixSystemOfEquations.h
 CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../RenderTriangle.h
 CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../RenderVertex.h
 CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../Renderer.h
 CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../Solver.h
+CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../SolverPoint.h
 CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../TextureType.h
 CMakeFiles/vulkan-fdm.dir/App.cpp.o: ../header.h
 
 CMakeFiles/vulkan-fdm.dir/ComplexFloat.cpp.o: ../ComplexFloat.cpp
 CMakeFiles/vulkan-fdm.dir/ComplexFloat.cpp.o: ../ComplexFloat.h
+CMakeFiles/vulkan-fdm.dir/ComplexFloat.cpp.o: ../header.h
+
+CMakeFiles/vulkan-fdm.dir/Equation.cpp.o: ../ComplexFloat.h
+CMakeFiles/vulkan-fdm.dir/Equation.cpp.o: ../Equation.cpp
+CMakeFiles/vulkan-fdm.dir/Equation.cpp.o: ../Equation.h
+CMakeFiles/vulkan-fdm.dir/Equation.cpp.o: ../EquationValue.h
+CMakeFiles/vulkan-fdm.dir/Equation.cpp.o: ../header.h
+
+CMakeFiles/vulkan-fdm.dir/EquationValue.cpp.o: ../ComplexFloat.h
+CMakeFiles/vulkan-fdm.dir/EquationValue.cpp.o: ../EquationValue.cpp
+CMakeFiles/vulkan-fdm.dir/EquationValue.cpp.o: ../EquationValue.h
+CMakeFiles/vulkan-fdm.dir/EquationValue.cpp.o: ../header.h
 
 CMakeFiles/vulkan-fdm.dir/Map.cpp.o: ../Map.cpp
 CMakeFiles/vulkan-fdm.dir/Map.cpp.o: ../Map.h
@@ -29,6 +45,17 @@ CMakeFiles/vulkan-fdm.dir/MapLoader.cpp.o: ../RenderTriangle.h
 CMakeFiles/vulkan-fdm.dir/MapLoader.cpp.o: ../RenderVertex.h
 CMakeFiles/vulkan-fdm.dir/MapLoader.cpp.o: ../TextureType.h
 CMakeFiles/vulkan-fdm.dir/MapLoader.cpp.o: ../header.h
+
+CMakeFiles/vulkan-fdm.dir/Matrix.cpp.o: ../ComplexFloat.h
+CMakeFiles/vulkan-fdm.dir/Matrix.cpp.o: ../Matrix.cpp
+CMakeFiles/vulkan-fdm.dir/Matrix.cpp.o: ../Matrix.h
+CMakeFiles/vulkan-fdm.dir/Matrix.cpp.o: ../header.h
+
+CMakeFiles/vulkan-fdm.dir/MatrixSystemOfEquations.cpp.o: ../ComplexFloat.h
+CMakeFiles/vulkan-fdm.dir/MatrixSystemOfEquations.cpp.o: ../Matrix.h
+CMakeFiles/vulkan-fdm.dir/MatrixSystemOfEquations.cpp.o: ../MatrixSystemOfEquations.cpp
+CMakeFiles/vulkan-fdm.dir/MatrixSystemOfEquations.cpp.o: ../MatrixSystemOfEquations.h
+CMakeFiles/vulkan-fdm.dir/MatrixSystemOfEquations.cpp.o: ../header.h
 
 CMakeFiles/vulkan-fdm.dir/RenderTriangle.cpp.o: ../RenderTriangle.cpp
 CMakeFiles/vulkan-fdm.dir/RenderTriangle.cpp.o: ../RenderTriangle.h
@@ -50,6 +77,8 @@ CMakeFiles/vulkan-fdm.dir/Renderer.cpp.o: ../header.h
 
 CMakeFiles/vulkan-fdm.dir/Solver.cpp.o: ../ComplexFloat.h
 CMakeFiles/vulkan-fdm.dir/Solver.cpp.o: ../Map.h
+CMakeFiles/vulkan-fdm.dir/Solver.cpp.o: ../Matrix.h
+CMakeFiles/vulkan-fdm.dir/Solver.cpp.o: ../MatrixSystemOfEquations.h
 CMakeFiles/vulkan-fdm.dir/Solver.cpp.o: ../RenderTriangle.h
 CMakeFiles/vulkan-fdm.dir/Solver.cpp.o: ../RenderVertex.h
 CMakeFiles/vulkan-fdm.dir/Solver.cpp.o: ../Solver.cpp
@@ -61,6 +90,15 @@ CMakeFiles/vulkan-fdm.dir/Solver.cpp.o: ../header.h
 CMakeFiles/vulkan-fdm.dir/SolverPoint.cpp.o: ../ComplexFloat.h
 CMakeFiles/vulkan-fdm.dir/SolverPoint.cpp.o: ../SolverPoint.cpp
 CMakeFiles/vulkan-fdm.dir/SolverPoint.cpp.o: ../SolverPoint.h
+CMakeFiles/vulkan-fdm.dir/SolverPoint.cpp.o: ../header.h
+
+CMakeFiles/vulkan-fdm.dir/SystemOfEquations.cpp.o: ../ComplexFloat.h
+CMakeFiles/vulkan-fdm.dir/SystemOfEquations.cpp.o: ../Equation.h
+CMakeFiles/vulkan-fdm.dir/SystemOfEquations.cpp.o: ../EquationValue.h
+CMakeFiles/vulkan-fdm.dir/SystemOfEquations.cpp.o: ../Matrix.h
+CMakeFiles/vulkan-fdm.dir/SystemOfEquations.cpp.o: ../SystemOfEquations.cpp
+CMakeFiles/vulkan-fdm.dir/SystemOfEquations.cpp.o: ../SystemOfEquations.h
+CMakeFiles/vulkan-fdm.dir/SystemOfEquations.cpp.o: ../header.h
 
 CMakeFiles/vulkan-fdm.dir/main.cpp.o: ../App.h
 CMakeFiles/vulkan-fdm.dir/main.cpp.o: ../RenderTriangle.h

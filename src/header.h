@@ -14,3 +14,9 @@
 #include <glm/geometric.hpp>
 
 #endif //VULKAN_FDM_HEADER_H
+
+
+/*
+ * TODO:
+ * - change voxelization to marching cube algorithm
+ */
