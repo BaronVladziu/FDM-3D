@@ -11,6 +11,9 @@
 
 class MatrixSystemOfEquations {
 
+    static constexpr float _SIMILARITY_THRESHOLD = 0.000001f;
+    static constexpr int _MIN_ITERATION_NUMBER = 10;
+
     const int _numberOfVariables;
     Matrix _matrix;
     Matrix _values;
@@ -24,11 +27,12 @@ public:
     ComplexFloat getSolution(int y) const;
     void set(int x, int y, ComplexFloat value);
     void setConstant(int y, ComplexFloat value);
-    void solve(int numberOfIterations);
+    void solve();
     void print(int y) const;
 
 private:
     void iterate();
+    bool areSolutionsSimilar(const Matrix & v1, const Matrix & v2) const;
 
 };
 

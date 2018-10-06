@@ -31,6 +31,8 @@ public:
     Matrix operator-(const Matrix & m) const;
     Matrix operator*(const Matrix & m) const;
     Matrix operator*(ComplexFloat k) const;
+    bool operator==(const Matrix & m) const;
+    bool operator!=(const Matrix & m) const;
     Matrix extractDiagonalInverse() const;
     void removeZerosFromDiagonal();
     void solve();

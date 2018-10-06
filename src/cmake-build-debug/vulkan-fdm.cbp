@@ -94,6 +94,9 @@
 		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/App.h">
 			<Option target="vulkan-fdm"/>
 		</Unit>
+		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Complex2RealType.h">
+			<Option target="vulkan-fdm"/>
+		</Unit>
 		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/ComplexFloat.cpp">
 			<Option target="vulkan-fdm"/>
 		</Unit>
@@ -152,6 +155,9 @@
 			<Option target="vulkan-fdm"/>
 		</Unit>
 		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Renderer.h">
+			<Option target="vulkan-fdm"/>
+		</Unit>
+		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/ScaleType.h">
 			<Option target="vulkan-fdm"/>
 		</Unit>
 		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Solver.cpp">

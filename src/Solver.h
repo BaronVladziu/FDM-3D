@@ -9,6 +9,8 @@
 #include "Map.h"
 #include "SolverPoint.h"
 #include "MatrixSystemOfEquations.h"
+#include "Complex2RealType.h"
+#include "ScaleType.h"
 
 
 class Solver {
@@ -18,6 +20,7 @@ class Solver {
     constexpr static float _PLANE_WAVE_IMPEDANCE = _DENSITY_OF_AIR*_SOUND_SPEED;
     constexpr static float _PI() { return float(std::atan(1)*4); };
     constexpr static int _NUMBER_OF_POINTS_PER_PERIOD = 40;
+    constexpr static float _REFERENCE_PRESSURE = 0.00002f;
 
     float _edgeLength;
     float _angularFrequency;
@@ -33,7 +36,8 @@ class Solver {
     float _maxZ;
 
 public:
-    std::list<RenderTriangle> solveRoom(const Map & map, float frequency);
+    std::list<RenderTriangle> solveRoom(const Map & map, float frequency,
+            Complex2RealType resultType, ScaleType scaleType);
 
 private:
     std::list<RenderTriangle> markAndCreateCubes(bool *** cubeMatrix, SolverPoint *** grid,

@@ -13,7 +13,7 @@ App::App() {
     MapLoader mapLoader;
     Map map = mapLoader.loadMap("../maps/room.json", "../maps/speakers.json");
     Solver solver;
-    std::list<RenderTriangle> solverTriangles = solver.solveRoom(map, 50);
+    std::list<RenderTriangle> solverTriangles = solver.solveRoom(map, 50, Complex2RealType::IMAG, ScaleType::DECIBELS);
 
     std::list<RenderTriangle> triangles; //TODO: uses unnecessary memory
     triangles.insert(triangles.end(), map.getWallTriangles().begin(), map.getWallTriangles().end());

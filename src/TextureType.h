@@ -10,7 +10,7 @@ enum TextureType {
     WALL,
     SPEAKER,
     WHITE,
-    NONE //NONE must be the last
+    COLOR
 };
 
 

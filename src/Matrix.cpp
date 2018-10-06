@@ -172,6 +172,22 @@ Matrix Matrix::operator*(ComplexFloat k) const {
     }
     return result;
 }
+bool Matrix::operator==(const Matrix & m) const {
+    if (m.getX() != _sizeX || m.getY() != _sizeY) {
+        return false;
+    }
+    for (int i = 0; i < _sizeX; i++) {
+        for (int j = 0; j < _sizeY; j++) {
+            if (_values[i][j] != m.get(i, j)) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+bool Matrix::operator!=(const Matrix & m) const {
+    return !operator==(m);
+}
 Matrix Matrix::extractDiagonalInverse() const {
     if (_sizeX != _sizeY) {
         std::cout << "ERROR: Tried to extract diagonal of non-square matrix!" << std::endl;

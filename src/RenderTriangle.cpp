@@ -27,7 +27,7 @@ RenderTriangle::RenderTriangle(TextureType textureID, RenderVertex v1, RenderVer
             v3.setTexPosition(v3.getTexX() / 2, v3.getTexY() / 2 + 0.5f);
             break;
         }
-        case NONE: {
+        case COLOR: {
             v1.setTexPosition(v1.getTexX() / 2 + 0.5f, v1.getTexY() / 2 + 0.5f);
             v2.setTexPosition(v2.getTexX() / 2 + 0.5f, v2.getTexY() / 2 + 0.5f);
             v3.setTexPosition(v3.getTexX() / 2 + 0.5f, v3.getTexY() / 2 + 0.5f);

@@ -47,6 +47,9 @@ bool ComplexFloat::operator==(const ComplexFloat & x) const {
 bool ComplexFloat::operator!=(const ComplexFloat & x) const {
     return (real != x.real || imag != x.imag);
 }
+float ComplexFloat::abs() const {
+    return std::sqrt(real*real + imag*imag);
+}
 std::string ComplexFloat::toString() const {
     if (imag >= 0) {
         return std::to_string(real) + "+" + std::to_string(imag) + "i";

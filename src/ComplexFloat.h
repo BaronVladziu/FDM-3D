@@ -27,6 +27,7 @@ public:
     ComplexFloat operator/(const float & k) const;
     bool operator==(const ComplexFloat & x) const;
     bool operator!=(const ComplexFloat & x) const;
+    float abs() const;
     std::string toString() const;
 
 };

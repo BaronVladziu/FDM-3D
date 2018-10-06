@@ -6,7 +6,7 @@
 
 
 //public:
-std::list<RenderTriangle> Solver::solveRoom(const Map & map, float frequency) {
+std::list<RenderTriangle> Solver::solveRoom(const Map & map, float frequency, Complex2RealType resultType, ScaleType scaleType) {
     //--- CREATE GRID ---//
     //Prepare triangles
     const std::list<RenderTriangle> & wallTriangles = map.getWallTriangles();
@@ -76,7 +76,7 @@ std::list<RenderTriangle> Solver::solveRoom(const Map & map, float frequency) {
 
     //--- CREATE EQUATIONS ---//
     MatrixSystemOfEquations equations = createSystemOfEquations(grid);
-    equations.solve(100);
+    equations.solve();
 
     //Print equations
     std::ofstream myfile;
@@ -108,6 +108,82 @@ std::list<RenderTriangle> Solver::solveRoom(const Map & map, float frequency) {
     delete[] cubeMatrix;
 
     //--- CREATE SOLUTION CUBES ---//
+    //Create result array
+    float * resultArray = new float[equations.getNumberOfVariables()];
+    switch (scaleType) {
+        case LINEAR: {
+            switch (resultType) {
+                case REAL: {
+                    for (int i = 0; i < equations.getNumberOfVariables(); i++) {
+                        resultArray[i] = equations.getSolution(i).real;
+                    }
+                    break;
+                }
+                case IMAG: {
+                    for (int i = 0; i < equations.getNumberOfVariables(); i++) {
+                        resultArray[i] = equations.getSolution(i).imag;
+                    }
+                    break;
+                }
+                case ABS: {
+                    for (int i = 0; i < equations.getNumberOfVariables(); i++) {
+                        resultArray[i] = equations.getSolution(i).abs();
+                    }
+                    break;
+                }
+            }
+            break;
+        }
+        case DECIBELS: {
+            switch (resultType) {
+                case REAL: {
+                    for (int i = 0; i < equations.getNumberOfVariables(); i++) {
+                        resultArray[i] = 20 * std::log10(abs(equations.getSolution(i).real) / _REFERENCE_PRESSURE);
+                    }
+                    break;
+                }
+                case IMAG: {
+                    for (int i = 0; i < equations.getNumberOfVariables(); i++) {
+                        resultArray[i] = 20 * std::log10(abs(equations.getSolution(i).imag) / _REFERENCE_PRESSURE);
+                    }
+                    break;
+                }
+                case ABS: {
+                    for (int i = 0; i < equations.getNumberOfVariables(); i++) {
+                        resultArray[i] = 20 * std::log10(equations.getSolution(i).abs() / _REFERENCE_PRESSURE);
+                    }
+                    break;
+                }
+            }
+            break;
+        }
+    }
+
+    //Find max result
+    float maxResult = 0;
+    for (int i = 0; i < equations.getNumberOfVariables(); i++) {
+        if (!std::isinf(resultArray[i])) {
+            float actResult = abs(resultArray[i]);
+            if (actResult > maxResult) {
+                maxResult = actResult;
+            }
+        }
+    }
+    std::cout << "Visualized result:" << std::endl;
+    for (int i = 0; i < equations.getNumberOfVariables(); i++) {
+        if (std::isinf(resultArray[i])) {
+            if (resultArray[i] > 0) {
+                resultArray[i] = maxResult;
+            } else {
+                resultArray[i] = -maxResult;
+            }
+        }
+        std::cout << resultArray[i] << " \t";
+    }
+    maxResult *= 1.01f; //To prevent blending with other textures
+    std::cout << std::endl;
+
+    //Create triangles
     std::list<RenderTriangle> solutionTriangles;
     for (int ix = 0; ix < _pointMatrixSizeX; ix++) {
         for (int iy = 0; iy < _pointMatrixSizeY; iy++) {
@@ -115,24 +191,27 @@ std::list<RenderTriangle> Solver::solveRoom(const Map & map, float frequency) {
                 //Trangle corners
                 glm::vec3 pointCenter = glm::vec3((ix * _edgeLength) + _minX, (iy * _edgeLength) + _minY, (iz * _edgeLength) + _minZ);
                 float solutionPointRadius = 0.03f;
-                RenderVertex cornerXp = RenderVertex(glm::vec3(pointCenter + glm::vec3(solutionPointRadius, 0, 0)), 0.5f, 0.5f);
-                RenderVertex cornerXm = RenderVertex(glm::vec3(pointCenter + glm::vec3(-solutionPointRadius, 0, 0)), 0.5f, 0.5f);
-                RenderVertex cornerYp = RenderVertex(glm::vec3(pointCenter + glm::vec3(0, solutionPointRadius, 0)), 0.5f, 0.5f);
-                RenderVertex cornerYm = RenderVertex(glm::vec3(pointCenter + glm::vec3(0, -solutionPointRadius, 0)), 0.5f, 0.5f);
-                RenderVertex cornerZp = RenderVertex(glm::vec3(pointCenter + glm::vec3(0, 0, solutionPointRadius)), 0.5f, 0.5f);
-                RenderVertex cornerZm = RenderVertex(glm::vec3(pointCenter + glm::vec3(0, 0, -solutionPointRadius)), 0.5f, 0.5f);
+                float colorValue = resultArray[calculateVariableIndex(ix, iy, iz)] / maxResult / 2 + 0.5f;
+                RenderVertex cornerXp = RenderVertex(glm::vec3(pointCenter + glm::vec3(solutionPointRadius, 0, 0)), colorValue, colorValue);
+                RenderVertex cornerXm = RenderVertex(glm::vec3(pointCenter + glm::vec3(-solutionPointRadius, 0, 0)), colorValue, colorValue);
+                RenderVertex cornerYp = RenderVertex(glm::vec3(pointCenter + glm::vec3(0, solutionPointRadius, 0)), colorValue, colorValue);
+                RenderVertex cornerYm = RenderVertex(glm::vec3(pointCenter + glm::vec3(0, -solutionPointRadius, 0)), colorValue, colorValue);
+                RenderVertex cornerZp = RenderVertex(glm::vec3(pointCenter + glm::vec3(0, 0, solutionPointRadius)), colorValue, colorValue);
+                RenderVertex cornerZm = RenderVertex(glm::vec3(pointCenter + glm::vec3(0, 0, -solutionPointRadius)), colorValue, colorValue);
                 //Create triangles
-                solutionTriangles.emplace_back(RenderTriangle(TextureType::WHITE, cornerXp, cornerYp, cornerZp));
-                solutionTriangles.emplace_back(RenderTriangle(TextureType::WHITE, cornerZp, cornerYp, cornerXm));
-                solutionTriangles.emplace_back(RenderTriangle(TextureType::WHITE, cornerZp, cornerYm, cornerXp));
-                solutionTriangles.emplace_back(RenderTriangle(TextureType::WHITE, cornerXm, cornerYm, cornerZp));
-                solutionTriangles.emplace_back(RenderTriangle(TextureType::WHITE, cornerZm, cornerYp, cornerXp));
-                solutionTriangles.emplace_back(RenderTriangle(TextureType::WHITE, cornerXm, cornerYp, cornerZm));
-                solutionTriangles.emplace_back(RenderTriangle(TextureType::WHITE, cornerXp, cornerYm, cornerZm));
-                solutionTriangles.emplace_back(RenderTriangle(TextureType::WHITE, cornerZm, cornerYm, cornerXm));
+                solutionTriangles.emplace_back(RenderTriangle(TextureType::COLOR, cornerXp, cornerYp, cornerZp));
+                solutionTriangles.emplace_back(RenderTriangle(TextureType::COLOR, cornerZp, cornerYp, cornerXm));
+                solutionTriangles.emplace_back(RenderTriangle(TextureType::COLOR, cornerZp, cornerYm, cornerXp));
+                solutionTriangles.emplace_back(RenderTriangle(TextureType::COLOR, cornerXm, cornerYm, cornerZp));
+                solutionTriangles.emplace_back(RenderTriangle(TextureType::COLOR, cornerZm, cornerYp, cornerXp));
+                solutionTriangles.emplace_back(RenderTriangle(TextureType::COLOR, cornerXm, cornerYp, cornerZm));
+                solutionTriangles.emplace_back(RenderTriangle(TextureType::COLOR, cornerXp, cornerYm, cornerZm));
+                solutionTriangles.emplace_back(RenderTriangle(TextureType::COLOR, cornerZm, cornerYm, cornerXm));
             }
         }
     }
+    //Cleanup
+    delete[] resultArray;
 
     return solutionTriangles;
 }
