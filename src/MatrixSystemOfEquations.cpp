@@ -37,13 +37,50 @@ void MatrixSystemOfEquations::solve() {
 //    std::cout << "Matrix:" << D.getX() << " , " << D.getY() << std::endl;
 //    D.print();
 
+    std::cout << "\nCalculating constants:" << std::endl;
+    const Matrix methodMatrix = _matrix.extractLower() + _matrix.extractUpper(); //TODO: Change to faster matrices
+    const Matrix diagonalInverse = _matrix.extractDiagonalInverse();
+    const Matrix fullMethodMatrix = diagonalInverse*methodMatrix;
+    const Matrix constantMatrix = diagonalInverse*_values;
+
+//    //Calculate largest eigenvalue
+//    std::cout << "\nFinding largest eigenvalue:" << std::endl;
+//    Matrix eigenvector(1, _numberOfVariables);
+//    eigenvector.fillWith(ComplexFloat(sqrt(2.f), sqrt(2.f)));
+//    ComplexFloat prevEigenvalue;
+//    ComplexFloat eigenvalue = eigenvector.getMax();
+    int i = 0;
+//    do {
+//        prevEigenvalue = eigenvalue;
+//        //Transformation
+//        eigenvector = fullMethodMatrix*eigenvector;
+//        //Find max
+//        eigenvalue = eigenvector.getMax();
+//        //Normalization
+//        eigenvector /= eigenvalue;
+//        //Print
+//        eigenvector.print();
+//        std::cout << eigenvalue.toString() << std::endl;
+//        i++;
+//    } while (i < _MIN_ITERATION_NUMBER || !areNumbersSimilar(prevEigenvalue, eigenvalue));
+//
+//    //Optimal relaxation constant
+//    ComplexFloat relaxationConstant = ComplexFloat(2, 0)/(ComplexFloat(1, 0)+((ComplexFloat(1,0)-eigenvalue*eigenvalue)).getRoot(2));
+
+
+    //Solve equations
+    std::cout << "\nSolving equations:" << std::endl;
     std::ofstream myfile;
     myfile.open ("results.txt");
     Matrix prevSolution = _solution;
-    int i = 0;
+    i = 0;
     do {
         prevSolution = _solution;
-        iterate();
+
+        //Iterate
+        _solution = constantMatrix - fullMethodMatrix*_solution;
+//        _solution = (_matrix.extractDiagonal())
+
         std::cout << "Iteration: " << i << std::endl;
         std::cout << "Result: " << std::endl;
         _solution.print();
@@ -65,9 +102,6 @@ void MatrixSystemOfEquations::print(int y) const {
 }
 
 //private:
-void MatrixSystemOfEquations::iterate() {
-    _solution = _matrix.extractDiagonalInverse()*(_values - (_matrix.extractLower() + _matrix.extractUpper())*_solution);
-}
 bool MatrixSystemOfEquations::areSolutionsSimilar(const Matrix & v1, const Matrix & v2) const {
     for (int i = 0; i < _numberOfVariables; i++) {
         if (std::isnan(v1.get(0, i).real) || std::isnan(v1.get(0, i).imag) || std::isnan(v2.get(0, i).real) || std::isnan(v2.get(0, i).imag)) {
@@ -75,9 +109,13 @@ bool MatrixSystemOfEquations::areSolutionsSimilar(const Matrix & v1, const Matri
             return true;
         }
         ComplexFloat difference = v1.get(0, i) - v2.get(0, i);
-        if (difference.real > _SIMILARITY_THRESHOLD || difference.imag > _SIMILARITY_THRESHOLD) {
+        if (abs(difference.real) > _SIMILARITY_THRESHOLD || abs(difference.imag) > _SIMILARITY_THRESHOLD) {
             return false;
         }
     }
     return true;
+}
+bool MatrixSystemOfEquations::areNumbersSimilar(const ComplexFloat & x, const ComplexFloat & y) const {
+    ComplexFloat difference = x - y;
+    return (abs(difference.real) < _SIMILARITY_THRESHOLD && abs(difference.imag) < _SIMILARITY_THRESHOLD);
 }

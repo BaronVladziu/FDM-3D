@@ -22,6 +22,7 @@ public:
     int getY() const;
     ComplexFloat get(int x, int y) const;
     void set(int x, int y, ComplexFloat value);
+    ComplexFloat getMax() const;
     void fillWith(ComplexFloat value);
     Matrix extractUpper() const;
     Matrix extractDiagonal() const;
@@ -31,6 +32,8 @@ public:
     Matrix operator-(const Matrix & m) const;
     Matrix operator*(const Matrix & m) const;
     Matrix operator*(ComplexFloat k) const;
+    void operator/=(float k);
+    void operator/=(const ComplexFloat & k);
     bool operator==(const Matrix & m) const;
     bool operator!=(const Matrix & m) const;
     Matrix extractDiagonalInverse() const;

@@ -44,6 +44,21 @@ void Matrix::set(int x, int y, ComplexFloat value) {
     assert(y < _sizeY);
     _values[x][y] = value;
 }
+ComplexFloat Matrix::getMax() const {
+    ComplexFloat result = get(0, 0);
+    float resultAbs = result.abs();
+    for (int i = 0; i < _sizeX; i++) {
+        for (int j = 0; j < _sizeY; j++) {
+            ComplexFloat cand = get(i, j);
+            float candAbs = cand.abs();
+            if (candAbs > resultAbs) {
+                result = cand;
+                resultAbs = candAbs;
+            }
+        }
+    }
+    return result;
+}
 void Matrix::fillWith(ComplexFloat value) {
     for (int i = 0; i < _sizeX; i++) {
         for (int j = 0; j < _sizeY; j++) {
@@ -171,6 +186,20 @@ Matrix Matrix::operator*(ComplexFloat k) const {
         }
     }
     return result;
+}
+void Matrix::operator/=(float k) {
+    for (int i = 0; i < _sizeX; i++) {
+        for (int j = 0; j < _sizeY; j++) {
+            _values[i][j] /= k;
+        }
+    }
+}
+void Matrix::operator/=(const ComplexFloat & k) {
+    for (int i = 0; i < _sizeX; i++) {
+        for (int j = 0; j < _sizeY; j++) {
+            _values[i][j] /= k;
+        }
+    }
 }
 bool Matrix::operator==(const Matrix & m) const {
     if (m.getX() != _sizeX || m.getY() != _sizeY) {

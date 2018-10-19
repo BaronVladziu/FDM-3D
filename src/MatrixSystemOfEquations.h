@@ -31,8 +31,8 @@ public:
     void print(int y) const;
 
 private:
-    void iterate();
     bool areSolutionsSimilar(const Matrix & v1, const Matrix & v2) const;
+    bool areNumbersSimilar(const ComplexFloat & x, const ComplexFloat & y) const;
 
 };
 

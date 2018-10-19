@@ -103,6 +103,9 @@
 		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/ComplexFloat.h">
 			<Option target="vulkan-fdm"/>
 		</Unit>
+		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/DimensionName.h">
+			<Option target="vulkan-fdm"/>
+		</Unit>
 		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Equation.cpp">
 			<Option target="vulkan-fdm"/>
 		</Unit>

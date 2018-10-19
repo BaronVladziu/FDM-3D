@@ -52,7 +52,7 @@ void Renderer::init(const std::list<RenderTriangle> & renderTriangles) { //TODO:
     vertices.clear();
     indices.clear();
 
-    unsigned short actVID = 0;
+    unsigned int actVID = 0;
     for (const RenderTriangle & renT : renderTriangles) {
         for (const RenderVertex & renV : renT.getVertices()) {
             Vertex v;
@@ -64,6 +64,7 @@ void Renderer::init(const std::list<RenderTriangle> & renderTriangles) { //TODO:
             actVID++;
         }
     }
+    std::cout << "Indices vector size:" << indices.size() << std::endl;
 
     initWindow();
     initVulkan();
@@ -1105,7 +1106,7 @@ void Renderer::createCommandBuffers() {
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
 
-        vkCmdBindIndexBuffer(commandBuffers[i], indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+        vkCmdBindIndexBuffer(commandBuffers[i], indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
         vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr);
 

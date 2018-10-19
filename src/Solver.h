@@ -11,6 +11,7 @@
 #include "MatrixSystemOfEquations.h"
 #include "Complex2RealType.h"
 #include "ScaleType.h"
+#include "DimensionName.h"
 
 
 class Solver {

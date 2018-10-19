@@ -16,6 +16,7 @@ public:
 
     ComplexFloat() = default;
     ComplexFloat(float realPart, float imaginaryPart);
+    ComplexFloat getRoot(int p) const;
     ComplexFloat operator+(const ComplexFloat & x) const;
     void operator+=(const ComplexFloat & x);
     ComplexFloat operator-(const ComplexFloat & x) const;
@@ -24,10 +25,12 @@ public:
     ComplexFloat operator*(const float & k) const;
     ComplexFloat operator/(const ComplexFloat & x) const;
     void operator/=(const ComplexFloat & x);
+    void operator/=(float k);
     ComplexFloat operator/(const float & k) const;
     bool operator==(const ComplexFloat & x) const;
     bool operator!=(const ComplexFloat & x) const;
     float abs() const;
+    float phase() const;
     std::string toString() const;
 
 };

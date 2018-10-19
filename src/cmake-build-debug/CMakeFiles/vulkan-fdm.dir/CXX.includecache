@@ -30,6 +30,8 @@ Renderer.h
 header.h
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/header.h
 
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/DimensionName.h
+
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Map.h
 header.h
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/header.h
@@ -105,6 +107,8 @@ Complex2RealType.h
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Complex2RealType.h
 ScaleType.h
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/ScaleType.h
+DimensionName.h
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/DimensionName.h
 
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/SolverPoint.h
 glm/vec3.hpp

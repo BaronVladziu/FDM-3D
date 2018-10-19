@@ -185,12 +185,12 @@ std::list<RenderTriangle> Solver::solveRoom(const Map & map, float frequency, Co
 
     //Create triangles
     std::list<RenderTriangle> solutionTriangles;
-    for (int ix = 0; ix < _pointMatrixSizeX; ix++) {
-        for (int iy = 0; iy < _pointMatrixSizeY; iy++) {
-            for (int iz = 0; iz < _pointMatrixSizeZ; iz++) {
+    for (int ix = 0; ix < _pointMatrixSizeX + 1; ix++) {
+        for (int iy = 0; iy < _pointMatrixSizeY + 1; iy++) {
+            for (int iz = 0; iz < _pointMatrixSizeZ + 1; iz++) {
                 //Trangle corners
                 glm::vec3 pointCenter = glm::vec3((ix * _edgeLength) + _minX, (iy * _edgeLength) + _minY, (iz * _edgeLength) + _minZ);
-                float solutionPointRadius = 0.03f;
+                float solutionPointRadius = 0.025f;
                 float colorValue = resultArray[calculateVariableIndex(ix, iy, iz)] / maxResult / 2 + 0.5f;
                 RenderVertex cornerXp = RenderVertex(glm::vec3(pointCenter + glm::vec3(solutionPointRadius, 0, 0)), colorValue, colorValue);
                 RenderVertex cornerXm = RenderVertex(glm::vec3(pointCenter + glm::vec3(-solutionPointRadius, 0, 0)), colorValue, colorValue);
@@ -212,8 +212,12 @@ std::list<RenderTriangle> Solver::solveRoom(const Map & map, float frequency, Co
     }
     //Cleanup
     delete[] resultArray;
+    //Concatenate triangles
+    solutionTriangles.insert(solutionTriangles.end(), wallTriangles.begin(), wallTriangles.end());
+    solutionTriangles.insert(solutionTriangles.end(), speakerTriangles.begin(), speakerTriangles.end());
 
     return solutionTriangles;
+//    return cubeTriangles;
 }
 
 //private:
@@ -745,57 +749,94 @@ MatrixSystemOfEquations Solver::createSystemOfEquations(SolverPoint *** grid) co
                                 systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f) + ComplexFloat(0.f, 1.f)*wallDerivativeFactor);
                                 systemOfEquations.set(calculateVariableIndex(i,j,k-1), actID, ComplexFloat(0.f, 1.f)*(-1)*wallDerivativeFactor);
                             } else {
-//                                //Not a border
-//                                glm::vec3 direction = grid[i][j][k].getNormalVector();
-//                                if (direction != glm::vec3(0,0,0)) {
-//                                    //Reflection
-//                                    //Scale normal vector
-//                                    direction *= _edgeLength;
-//                                    //Calculate distances from walls
-//                                    float distXs = direction.x;
-//                                    float distYs = direction.y;
-//                                    float distZs = direction.z;
-//                                    float distXo = _edgeLength - direction.x;
-//                                    float distYo = _edgeLength - direction.y;
-//                                    float distZo = _edgeLength - direction.z;
-//                                    //Calculate distances from corners
-//                                    float distXsYsZs = max(abs(distXs), abs(distYs), abs(distZs));
-//                                    float distXoYsZs = max(abs(distXo), abs(distYs), abs(distZs));
-//                                    float distXsYoZs = max(abs(distXs), abs(distYo), abs(distZs));
-//                                    float distXoYoZs = max(abs(distXo), abs(distYo), abs(distZs));
-//                                    float distXsYsZo = max(abs(distXs), abs(distYs), abs(distZo));
-//                                    float distXoYsZo = max(abs(distXo), abs(distYs), abs(distZo));
-//                                    float distXsYoZo = max(abs(distXs), abs(distYo), abs(distZo));
-//                                    float distXoYoZo = max(abs(distXo), abs(distYo), abs(distZo));
-//                                    //Calculate point factors
-//                                    float factXsYsZs = 1 - distXsYsZs;
-//                                    float factXoYsZs = 1 - distXoYsZs;
-//                                    float factXsYoZs = 1 - distXsYoZs;
-//                                    float factXoYoZs = 1 - distXoYoZs;
-//                                    float factXsYsZo = 1 - distXsYsZo;
-//                                    float factXoYsZo = 1 - distXoYsZo;
-//                                    float factXsYoZo = 1 - distXsYoZo;
-//                                    float factXoYoZo = 1 - distXoYoZo;
-//                                    float denominator = 2*_edgeLength*(factXsYsZs+factXoYsZs+factXsYoZs+factXoYoZs+
-//                                            factXsYsZo+factXoYsZo+factXsYoZo+factXoYoZo);
-//                                    //Set variable factors
-//                                    systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f)*factXsYsZs/denominator - ComplexFloat(1.f, 0.f));
-//                                    systemOfEquations.set(calculateVariableIndex(i+pseudoSignum(distXs),j,k), actID, ComplexFloat(1.f, 0.f)*factXoYsZs/denominator);
-////                                    systemOfEquations.set(calculateVariableIndex(i-pseudoSignum(distXs),j,k), actID, ComplexFloat(1.f, 0.f)*-factXoYsZs/denominator);
-//                                    systemOfEquations.set(calculateVariableIndex(i,j+pseudoSignum(distYs),k), actID, ComplexFloat(1.f, 0.f)*factXsYoZs/denominator);
-////                                    systemOfEquations.set(calculateVariableIndex(i,j-pseudoSignum(distYs),k), actID, ComplexFloat(1.f, 0.f)*-factXsYoZs/denominator);
-//                                    systemOfEquations.set(calculateVariableIndex(i,j,k+pseudoSignum(distZs)), actID, ComplexFloat(1.f, 0.f)*factXsYsZo/denominator);
-////                                    systemOfEquations.set(calculateVariableIndex(i,j,k-pseudoSignum(distZs)), actID, ComplexFloat(1.f, 0.f)*-factXsYsZo/denominator);
-//                                    systemOfEquations.set(calculateVariableIndex(i+pseudoSignum(distXs),j+pseudoSignum(distYs),k), actID, ComplexFloat(1.f, 0.f)*factXoYoZs/denominator);
-////                                    systemOfEquations.set(calculateVariableIndex(i-pseudoSignum(distXs),j-pseudoSignum(distYs),k), actID, ComplexFloat(1.f, 0.f)*-factXoYoZs/denominator);
-//                                    systemOfEquations.set(calculateVariableIndex(i+pseudoSignum(distXs),j,k+pseudoSignum(distZs)), actID, ComplexFloat(1.f, 0.f)*factXoYsZo/denominator);
-////                                    systemOfEquations.set(calculateVariableIndex(i-pseudoSignum(distXs),j,k-pseudoSignum(distZs)), actID, ComplexFloat(1.f, 0.f)*-factXoYsZo/denominator);
-//                                    systemOfEquations.set(calculateVariableIndex(i,j+pseudoSignum(distYs),k+pseudoSignum(distZs)), actID, ComplexFloat(1.f, 0.f)*factXsYoZo/denominator);
-////                                    systemOfEquations.set(calculateVariableIndex(i,j-pseudoSignum(distYs),k-pseudoSignum(distZs)), actID, ComplexFloat(1.f, 0.f)*-factXsYoZo/denominator);
-//                                    systemOfEquations.set(calculateVariableIndex(i+pseudoSignum(distXs),j+pseudoSignum(distYs),k+pseudoSignum(distZs)), actID, ComplexFloat(1.f, 0.f)*factXoYoZo/denominator);
-////                                    systemOfEquations.set(calculateVariableIndex(i-pseudoSignum(distXs),j-pseudoSignum(distYs),k-pseudoSignum(distZs)), actID, ComplexFloat(1.f, 0.f)*-factXoYoZo/denominator);
-//
-//                                } else {
+                                //Not a border
+                                glm::vec3 direction = grid[i][j][k].getNormalVector();
+                                if (direction != glm::vec3(0,0,0)) {
+                                    //Reflection
+                                    //Find largest part
+                                    DimensionName largestDimension = X;
+                                    if (abs(direction.y) > abs(direction.x)) {
+                                        if (abs(direction.z) > abs(direction.y)) {
+                                            largestDimension = Z;
+                                        } else {
+                                            largestDimension = Y;
+                                        }
+                                    } else if (abs(direction.z) > abs(direction.x)) {
+                                        largestDimension = Z;
+                                    }
+                                    //Scale normal vector
+                                    switch (largestDimension) {
+                                        case X: {
+                                            direction *= _edgeLength / abs(direction.x);
+                                            break;
+                                        }
+                                        case Y: {
+                                            direction *= _edgeLength / abs(direction.y);
+                                            break;
+                                        }
+                                        case Z: {
+                                            direction *= _edgeLength / abs(direction.z);
+                                            break;
+                                        }
+                                    }
+//                                    std::cout << "Normal vector scaling:" << std::endl;
+//                                    std::cout << grid[i][j][k].getNormalVector().x << " --> " << direction.x << std::endl;
+//                                    std::cout << grid[i][j][k].getNormalVector().y << " --> " << direction.y << std::endl;
+//                                    std::cout << grid[i][j][k].getNormalVector().z << " --> " << direction.z << std::endl;
+                                    //Get square corner IDs and distances from edges
+                                    int fixedI = i + pseudoSignum(direction.x);
+                                    int fixedJ = j + pseudoSignum(direction.y);
+                                    int fixedK = k + pseudoSignum(direction.z);
+                                    int cornerXoYoID = calculateVariableIndex(fixedI, fixedJ, fixedK);
+                                    int cornerXoYsID = -1;
+                                    int cornerXsYoID = -1;
+                                    int cornerXsYsID = -1;
+                                    float distXs = 0.f;
+                                    float distYs = 0.f;
+                                    switch (largestDimension) {
+                                        case X: {
+                                            cornerXoYsID = calculateVariableIndex(fixedI, fixedJ, j);
+                                            cornerXsYoID = calculateVariableIndex(fixedI, j, fixedK);
+                                            cornerXsYsID = calculateVariableIndex(fixedI, j, k);
+                                            distXs = abs(direction.y);
+                                            distYs = abs(direction.z);
+                                            break;
+                                        }
+                                        case Y: {
+                                            cornerXoYsID = calculateVariableIndex(fixedI, fixedJ, k);
+                                            cornerXsYoID = calculateVariableIndex(i, fixedJ, fixedK);
+                                            cornerXsYsID = calculateVariableIndex(i, fixedJ, k);
+                                            distXs = abs(direction.x);
+                                            distYs = abs(direction.z);
+                                            break;
+                                        }
+                                        case Z: {
+                                            cornerXoYsID = calculateVariableIndex(fixedI, j, fixedK);
+                                            cornerXsYoID = calculateVariableIndex(i, fixedJ, fixedK);
+                                            cornerXsYsID = calculateVariableIndex(i, j, fixedK);
+                                            distXs = abs(direction.x);
+                                            distYs = abs(direction.y);
+                                            break;
+                                        }
+                                    }
+                                    assert(cornerXoYoID != cornerXoYsID != cornerXsYoID != cornerXsYsID != actID);
+                                    float distXo = _edgeLength - distXs;
+                                    float distYo = _edgeLength - distYs;
+                                    //Calculate distances from corners
+                                    float distXsYs = std::max(distXs, distYs);
+                                    float distXsYo = std::max(distXs, distYo);
+                                    float distXoYs = std::max(distXo, distYs);
+                                    float distXoYo = std::max(distXo, distYo);
+                                    //Set equation
+                                    float directionLength = glm::length(direction);
+                                    float denominator = directionLength * (4*_edgeLength - distXsYs - distXoYs - distXsYo - distXoYo);
+                                    systemOfEquations.set(actID, actID, ComplexFloat(1.f, 0.f)/directionLength);
+                                    systemOfEquations.set(cornerXsYsID, actID, ComplexFloat(1.f, 0.f)*(_edgeLength - distXsYs)/denominator);
+                                    systemOfEquations.set(cornerXsYoID, actID, ComplexFloat(1.f, 0.f)*(_edgeLength - distXsYo)/denominator);
+                                    systemOfEquations.set(cornerXoYsID, actID, ComplexFloat(1.f, 0.f)*(_edgeLength - distXoYs)/denominator);
+                                    systemOfEquations.set(cornerXoYoID, actID, ComplexFloat(1.f, 0.f)*(_edgeLength - distXoYo)/denominator);
+
+                                } else {
                                     //Helmholtz equation
                                     systemOfEquations.set(calculateVariableIndex(i+1,j,k), actID, ComplexFloat(1.f, 0.f));
                                     systemOfEquations.set(calculateVariableIndex(i-1,j,k), actID, ComplexFloat(1.f, 0.f));
@@ -804,7 +845,7 @@ MatrixSystemOfEquations Solver::createSystemOfEquations(SolverPoint *** grid) co
                                     systemOfEquations.set(calculateVariableIndex(i,j,k+1), actID, ComplexFloat(1.f, 0.f));
                                     systemOfEquations.set(calculateVariableIndex(i,j,k-1), actID, ComplexFloat(1.f, 0.f));
                                     systemOfEquations.set(actID, actID, ComplexFloat(_edgeLength*_edgeLength*_waveLength*_waveLength - 6, 0.f));
-//                                }
+                                }
                             }
                         }
                     }
