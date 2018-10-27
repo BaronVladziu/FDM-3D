@@ -10,9 +10,9 @@ MatrixSystemOfEquations::MatrixSystemOfEquations(int numberOfVariables)
     : _numberOfVariables(numberOfVariables), _matrix(numberOfVariables, numberOfVariables),
     _values(1, numberOfVariables), _solution(1, numberOfVariables)
 {
-    _solution.fillWith(ComplexFloat(0.f, 0.f));
-    _matrix.fillWith(ComplexFloat(0.f, 0.f));
-    _values.fillWith(ComplexFloat(0.f, 0.f));
+    _solution.fillWithZeros();
+    _matrix.fillWithZeros();
+    _values.fillWithZeros();
 }
 int MatrixSystemOfEquations::getNumberOfVariables() const {
     return _numberOfVariables;
@@ -38,10 +38,10 @@ void MatrixSystemOfEquations::solve() {
 //    D.print();
 
     std::cout << "\nCalculating constants:" << std::endl;
-    const Matrix methodMatrix = _matrix.extractLower() + _matrix.extractUpper(); //TODO: Change to faster matrices
-    const Matrix diagonalInverse = _matrix.extractDiagonalInverse();
-    const Matrix fullMethodMatrix = diagonalInverse*methodMatrix;
-    const Matrix constantMatrix = diagonalInverse*_values;
+    const MapMatrix methodMatrix = _matrix.extractLower() + _matrix.extractUpper();
+    const MapMatrix diagonalInverse = _matrix.extractDiagonalInverse();
+    const MapMatrix fullMethodMatrix = diagonalInverse*methodMatrix;
+    const MapMatrix constantMatrix = diagonalInverse*_values;
 
 //    //Calculate largest eigenvalue
 //    std::cout << "\nFinding largest eigenvalue:" << std::endl;
@@ -72,7 +72,7 @@ void MatrixSystemOfEquations::solve() {
     std::cout << "\nSolving equations:" << std::endl;
     std::ofstream myfile;
     myfile.open ("results.txt");
-    Matrix prevSolution = _solution;
+    MapMatrix prevSolution = _solution;
     i = 0;
     do {
         prevSolution = _solution;
@@ -102,7 +102,7 @@ void MatrixSystemOfEquations::print(int y) const {
 }
 
 //private:
-bool MatrixSystemOfEquations::areSolutionsSimilar(const Matrix & v1, const Matrix & v2) const {
+bool MatrixSystemOfEquations::areSolutionsSimilar(const MapMatrix & v1, const MapMatrix & v2) const {
     for (int i = 0; i < _numberOfVariables; i++) {
         if (std::isnan(v1.get(0, i).real) || std::isnan(v1.get(0, i).imag) || std::isnan(v2.get(0, i).real) || std::isnan(v2.get(0, i).imag)) {
             std::cout << "ERROR: Unstable solution! Consider raising _NUMBER_OF_POINTS_PER_PERIOD value." << std::endl;

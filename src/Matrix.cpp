@@ -8,6 +8,9 @@
 Matrix::Matrix(int x, int y)
     : _sizeX(x), _sizeY(y)
 {
+    if (_values != nullptr) {
+        cleanup();
+    }
     _values = new ComplexFloat * [_sizeX];
     for (int i = 0; i < _sizeX; i++) {
         _values[i] = new ComplexFloat [_sizeY];
@@ -16,6 +19,9 @@ Matrix::Matrix(int x, int y)
 Matrix::Matrix(const Matrix & m)
     : _sizeX(m.getX()), _sizeY(m.getY())
 {
+    if (_values != nullptr) {
+        cleanup();
+    }
     _values = new ComplexFloat * [_sizeX];
     for (int i = 0; i < _sizeX; i++) {
         _values[i] = new ComplexFloat [_sizeY];
@@ -37,7 +43,7 @@ ComplexFloat Matrix::get(int x, int y) const {
     assert(y < _sizeY);
     return _values[x][y];
 }
-void Matrix::set(int x, int y, ComplexFloat value) {
+void Matrix::set(int x, int y, const ComplexFloat & value) {
     assert(x >= 0);
     assert(x < _sizeX);
     assert(y >= 0);
@@ -59,10 +65,10 @@ ComplexFloat Matrix::getMax() const {
     }
     return result;
 }
-void Matrix::fillWith(ComplexFloat value) {
+void Matrix::fillWithZeros() {
     for (int i = 0; i < _sizeX; i++) {
         for (int j = 0; j < _sizeY; j++) {
-            _values[i][j] = value;
+            _values[i][j] = ComplexFloat(0,0);
         }
     }
 }
@@ -123,6 +129,9 @@ Matrix Matrix::extractLower() const {
 Matrix & Matrix::operator=(const Matrix & m) {
     _sizeX = m.getX();
     _sizeY = m.getY();
+    if (_values != nullptr) {
+        cleanup();
+    }
     _values = new ComplexFloat * [_sizeX];
     for (int i = 0; i < _sizeX; i++) {
         _values[i] = new ComplexFloat [_sizeY];
@@ -178,7 +187,7 @@ Matrix Matrix::operator*(const Matrix & m) const {
         return result;
     }
 }
-Matrix Matrix::operator*(ComplexFloat k) const {
+Matrix Matrix::operator*(const ComplexFloat & k) const {
     Matrix result(_sizeX, _sizeY);
     for (int i = 0; i < _sizeX; i++) {
         for (int j = 0; j < _sizeY; j++) {
@@ -314,8 +323,14 @@ void Matrix::print(const std::string & filename) const {
     myfile.close();
 }
 Matrix::~Matrix() {
-    for (int i = 0; i < _sizeX; i++) {
-        delete[] _values[i];
+    cleanup();
+}
+
+void Matrix::cleanup() {
+    if (_values != nullptr) {
+        for (int i = 0; i < _sizeX; i++) {
+            delete[] _values[i];
+        }
+        delete[] _values;
     }
-    delete[] _values;
 }

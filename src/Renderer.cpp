@@ -48,7 +48,8 @@ struct UniformBufferObject {
 };
 
 //public:
-void Renderer::init(const std::list<RenderTriangle> & renderTriangles) { //TODO: There is some kind of limit for drown triangles
+void Renderer::init(const std::list<RenderTriangle> & renderTriangles) {
+    std::cout << "Drawing:" << std::endl;
     vertices.clear();
     indices.clear();
 

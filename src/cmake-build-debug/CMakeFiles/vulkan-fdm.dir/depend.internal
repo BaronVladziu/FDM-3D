@@ -7,9 +7,11 @@ CMakeFiles/vulkan-fdm.dir/App.cpp.o
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Complex2RealType.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/ComplexFloat.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/DimensionName.h
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/I_SystemOfEquations.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Map.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapLoader.h
- /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Matrix.h
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapMatrix.h
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapValue.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/MatrixSystemOfEquations.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/RenderTriangle.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/RenderVertex.h
@@ -49,6 +51,12 @@ CMakeFiles/vulkan-fdm.dir/MapLoader.cpp.o
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/RenderVertex.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/TextureType.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/header.h
+CMakeFiles/vulkan-fdm.dir/MapMatrix.cpp.o
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/ComplexFloat.h
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapMatrix.cpp
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapMatrix.h
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapValue.h
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/header.h
 CMakeFiles/vulkan-fdm.dir/Matrix.cpp.o
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/ComplexFloat.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Matrix.cpp
@@ -56,7 +64,9 @@ CMakeFiles/vulkan-fdm.dir/Matrix.cpp.o
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/header.h
 CMakeFiles/vulkan-fdm.dir/MatrixSystemOfEquations.cpp.o
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/ComplexFloat.h
- /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Matrix.h
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/I_SystemOfEquations.h
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapMatrix.h
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapValue.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/MatrixSystemOfEquations.cpp
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/MatrixSystemOfEquations.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/header.h
@@ -82,8 +92,10 @@ CMakeFiles/vulkan-fdm.dir/Solver.cpp.o
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Complex2RealType.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/ComplexFloat.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/DimensionName.h
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/I_SystemOfEquations.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Map.h
- /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Matrix.h
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapMatrix.h
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapValue.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/MatrixSystemOfEquations.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/RenderTriangle.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/RenderVertex.h
@@ -102,6 +114,7 @@ CMakeFiles/vulkan-fdm.dir/SystemOfEquations.cpp.o
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/ComplexFloat.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Equation.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/EquationValue.h
+ /home/baronvladziu/Projects/Vulkan/FDM-3D/src/I_SystemOfEquations.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Matrix.h
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/SystemOfEquations.cpp
  /home/baronvladziu/Projects/Vulkan/FDM-3D/src/SystemOfEquations.h

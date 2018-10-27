@@ -118,6 +118,9 @@
 		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/EquationValue.h">
 			<Option target="vulkan-fdm"/>
 		</Unit>
+		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/I_SystemOfEquations.h">
+			<Option target="vulkan-fdm"/>
+		</Unit>
 		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Map.cpp">
 			<Option target="vulkan-fdm"/>
 		</Unit>
@@ -128,6 +131,15 @@
 			<Option target="vulkan-fdm"/>
 		</Unit>
 		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapLoader.h">
+			<Option target="vulkan-fdm"/>
+		</Unit>
+		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapMatrix.cpp">
+			<Option target="vulkan-fdm"/>
+		</Unit>
+		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapMatrix.h">
+			<Option target="vulkan-fdm"/>
+		</Unit>
+		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapValue.h">
 			<Option target="vulkan-fdm"/>
 		</Unit>
 		<Unit filename="/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Matrix.cpp">

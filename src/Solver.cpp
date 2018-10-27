@@ -79,17 +79,18 @@ std::list<RenderTriangle> Solver::solveRoom(const Map & map, float frequency, Co
     equations.solve();
 
     //Print equations
-    std::ofstream myfile;
-    myfile.open ("equations.txt");
-    for (int j = 0; j < equations.getNumberOfVariables(); j++) {
-        for (int i = 0; i < equations.getNumberOfVariables(); i++) {
-            myfile << equations.get(i, j).real << "+" << equations.get(i, j).imag << "i\t";
-        }
-        myfile << equations.getConstant(j).real << "+" << equations.getConstant(j).imag << "i\t";
-        myfile << std::endl;
-    }
-    myfile << std::endl;
-    myfile.close();
+//    std::cout << "Saving results:" << std::endl;
+//    std::ofstream myfile;
+//    myfile.open ("equations.txt");
+//    for (int j = 0; j < equations.getNumberOfVariables(); j++) {
+//        for (int i = 0; i < equations.getNumberOfVariables(); i++) {
+//            myfile << equations.get(i, j).real << "+" << equations.get(i, j).imag << "i\t";
+//        }
+//        myfile << equations.getConstant(j).real << "+" << equations.getConstant(j).imag << "i\t";
+//        myfile << std::endl;
+//    }
+//    myfile << std::endl;
+//    myfile.close();
 
     //Cleanup
     for (int i = 0; i < _pointMatrixSizeX + 1; i++) {
@@ -108,6 +109,7 @@ std::list<RenderTriangle> Solver::solveRoom(const Map & map, float frequency, Co
     delete[] cubeMatrix;
 
     //--- CREATE SOLUTION CUBES ---//
+    std::cout << "Creating models:" << std::endl;
     //Create result array
     float * resultArray = new float[equations.getNumberOfVariables()];
     switch (scaleType) {
@@ -190,14 +192,13 @@ std::list<RenderTriangle> Solver::solveRoom(const Map & map, float frequency, Co
             for (int iz = 0; iz < _pointMatrixSizeZ + 1; iz++) {
                 //Trangle corners
                 glm::vec3 pointCenter = glm::vec3((ix * _edgeLength) + _minX, (iy * _edgeLength) + _minY, (iz * _edgeLength) + _minZ);
-                float solutionPointRadius = 0.025f;
                 float colorValue = resultArray[calculateVariableIndex(ix, iy, iz)] / maxResult / 2 + 0.5f;
-                RenderVertex cornerXp = RenderVertex(glm::vec3(pointCenter + glm::vec3(solutionPointRadius, 0, 0)), colorValue, colorValue);
-                RenderVertex cornerXm = RenderVertex(glm::vec3(pointCenter + glm::vec3(-solutionPointRadius, 0, 0)), colorValue, colorValue);
-                RenderVertex cornerYp = RenderVertex(glm::vec3(pointCenter + glm::vec3(0, solutionPointRadius, 0)), colorValue, colorValue);
-                RenderVertex cornerYm = RenderVertex(glm::vec3(pointCenter + glm::vec3(0, -solutionPointRadius, 0)), colorValue, colorValue);
-                RenderVertex cornerZp = RenderVertex(glm::vec3(pointCenter + glm::vec3(0, 0, solutionPointRadius)), colorValue, colorValue);
-                RenderVertex cornerZm = RenderVertex(glm::vec3(pointCenter + glm::vec3(0, 0, -solutionPointRadius)), colorValue, colorValue);
+                RenderVertex cornerXp = RenderVertex(glm::vec3(pointCenter + glm::vec3(_DOT_SIZE, 0, 0)), colorValue, colorValue);
+                RenderVertex cornerXm = RenderVertex(glm::vec3(pointCenter + glm::vec3(-_DOT_SIZE, 0, 0)), colorValue, colorValue);
+                RenderVertex cornerYp = RenderVertex(glm::vec3(pointCenter + glm::vec3(0, _DOT_SIZE, 0)), colorValue, colorValue);
+                RenderVertex cornerYm = RenderVertex(glm::vec3(pointCenter + glm::vec3(0, -_DOT_SIZE, 0)), colorValue, colorValue);
+                RenderVertex cornerZp = RenderVertex(glm::vec3(pointCenter + glm::vec3(0, 0, _DOT_SIZE)), colorValue, colorValue);
+                RenderVertex cornerZm = RenderVertex(glm::vec3(pointCenter + glm::vec3(0, 0, -_DOT_SIZE)), colorValue, colorValue);
                 //Create triangles
                 solutionTriangles.emplace_back(RenderTriangle(TextureType::COLOR, cornerXp, cornerYp, cornerZp));
                 solutionTriangles.emplace_back(RenderTriangle(TextureType::COLOR, cornerZp, cornerYp, cornerXm));
@@ -474,11 +475,11 @@ std::list<RenderTriangle> Solver::markAndCreateCubes(bool *** cubeMatrix, Solver
                         }
                         secondSideVector = glm::normalize(glm::cross(grid[i][j][k].getNormalVector(), firstSideVector));
 
-                        glm::vec3 point0Position = pointPosition + 0.03f * grid[i][j][k].getNormalVector();
-                        glm::vec3 point11Position = pointPosition + 0.007f * firstSideVector;
-                        glm::vec3 point12Position = pointPosition - 0.007f * firstSideVector;
-                        glm::vec3 point21Position = pointPosition + 0.007f * secondSideVector;
-                        glm::vec3 point22Position = pointPosition - 0.007f * secondSideVector;
+                        glm::vec3 point0Position = pointPosition + _ARROW_SIZE * grid[i][j][k].getNormalVector();
+                        glm::vec3 point11Position = pointPosition + _ARROW_SIZE/5 * firstSideVector;
+                        glm::vec3 point12Position = pointPosition - _ARROW_SIZE/5 * firstSideVector;
+                        glm::vec3 point21Position = pointPosition + _ARROW_SIZE/5 * secondSideVector;
+                        glm::vec3 point22Position = pointPosition - _ARROW_SIZE/5 * secondSideVector;
 
                         normalsRenderTriangles.emplace_back(
                                 RenderTriangle(textureID, RenderVertex(point11Position, 0, 0),

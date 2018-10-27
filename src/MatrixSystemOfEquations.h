@@ -6,18 +6,20 @@
 #define VULKAN_FDM_MATRIXSYSTEMOFEQUATIONS_H
 
 #include "header.h"
-#include "Matrix.h"
+#include "MapMatrix.h"
+#include "I_SystemOfEquations.h"
 
 
-class MatrixSystemOfEquations {
+class MatrixSystemOfEquations
+        : public I_SystemOfEquations {
 
     static constexpr float _SIMILARITY_THRESHOLD = 0.000001f;
     static constexpr int _MIN_ITERATION_NUMBER = 10;
 
     const int _numberOfVariables;
-    Matrix _matrix;
-    Matrix _values;
-    Matrix _solution;
+    MapMatrix _matrix;
+    MapMatrix _values;
+    MapMatrix _solution;
 
 public:
     explicit MatrixSystemOfEquations(int numberOfVariables);
@@ -31,7 +33,7 @@ public:
     void print(int y) const;
 
 private:
-    bool areSolutionsSimilar(const Matrix & v1, const Matrix & v2) const;
+    bool areSolutionsSimilar(const MapMatrix & v1, const MapMatrix & v2) const;
     bool areNumbersSimilar(const ComplexFloat & x, const ComplexFloat & y) const;
 
 };

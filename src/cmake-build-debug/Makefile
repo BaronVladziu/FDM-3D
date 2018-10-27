@@ -285,6 +285,33 @@ MapLoader.cpp.s:
 	$(MAKE) -f CMakeFiles/vulkan-fdm.dir/build.make CMakeFiles/vulkan-fdm.dir/MapLoader.cpp.s
 .PHONY : MapLoader.cpp.s
 
+MapMatrix.o: MapMatrix.cpp.o
+
+.PHONY : MapMatrix.o
+
+# target to build an object file
+MapMatrix.cpp.o:
+	$(MAKE) -f CMakeFiles/vulkan-fdm.dir/build.make CMakeFiles/vulkan-fdm.dir/MapMatrix.cpp.o
+.PHONY : MapMatrix.cpp.o
+
+MapMatrix.i: MapMatrix.cpp.i
+
+.PHONY : MapMatrix.i
+
+# target to preprocess a source file
+MapMatrix.cpp.i:
+	$(MAKE) -f CMakeFiles/vulkan-fdm.dir/build.make CMakeFiles/vulkan-fdm.dir/MapMatrix.cpp.i
+.PHONY : MapMatrix.cpp.i
+
+MapMatrix.s: MapMatrix.cpp.s
+
+.PHONY : MapMatrix.s
+
+# target to generate assembly for a file
+MapMatrix.cpp.s:
+	$(MAKE) -f CMakeFiles/vulkan-fdm.dir/build.make CMakeFiles/vulkan-fdm.dir/MapMatrix.cpp.s
+.PHONY : MapMatrix.cpp.s
+
 Matrix.o: Matrix.cpp.o
 
 .PHONY : Matrix.o
@@ -555,6 +582,9 @@ help:
 	@echo "... MapLoader.o"
 	@echo "... MapLoader.i"
 	@echo "... MapLoader.s"
+	@echo "... MapMatrix.o"
+	@echo "... MapMatrix.i"
+	@echo "... MapMatrix.s"
 	@echo "... Matrix.o"
 	@echo "... Matrix.i"
 	@echo "... Matrix.s"

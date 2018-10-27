@@ -20,8 +20,11 @@ class Solver {
     constexpr static float _DENSITY_OF_AIR = 1.225f;
     constexpr static float _PLANE_WAVE_IMPEDANCE = _DENSITY_OF_AIR*_SOUND_SPEED;
     constexpr static float _PI() { return float(std::atan(1)*4); };
-    constexpr static int _NUMBER_OF_POINTS_PER_PERIOD = 40;
+    constexpr static int _NUMBER_OF_POINTS_PER_PERIOD = 50;
     constexpr static float _REFERENCE_PRESSURE = 0.00002f;
+
+    constexpr static float _ARROW_SIZE = 0.03f;
+    constexpr static float _DOT_SIZE = 0.01f;
 
     float _edgeLength;
     float _angularFrequency;

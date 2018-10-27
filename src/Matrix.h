@@ -11,9 +11,9 @@
 
 class Matrix {
 
-    int _sizeX;
-    int _sizeY;
-    ComplexFloat ** _values;
+    int _sizeX = 0;
+    int _sizeY = 0;
+    ComplexFloat ** _values = nullptr;
 
 public:
     Matrix(int x, int y);
@@ -21,9 +21,9 @@ public:
     int getX() const;
     int getY() const;
     ComplexFloat get(int x, int y) const;
-    void set(int x, int y, ComplexFloat value);
+    void set(int x, int y, const ComplexFloat & value);
     ComplexFloat getMax() const;
-    void fillWith(ComplexFloat value);
+    void fillWithZeros();
     Matrix extractUpper() const;
     Matrix extractDiagonal() const;
     Matrix extractLower() const;
@@ -31,7 +31,7 @@ public:
     Matrix operator+(const Matrix & m) const;
     Matrix operator-(const Matrix & m) const;
     Matrix operator*(const Matrix & m) const;
-    Matrix operator*(ComplexFloat k) const;
+    Matrix operator*(const ComplexFloat & k) const;
     void operator/=(float k);
     void operator/=(const ComplexFloat & k);
     bool operator==(const Matrix & m) const;
@@ -42,6 +42,9 @@ public:
     void print() const;
     void print(const std::string & filename) const;
     ~Matrix();
+
+private:
+    void cleanup();
 
 };
 

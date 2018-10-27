@@ -14,6 +14,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/vulkan-fdm.dir/Equation.cpp.o"
   "CMakeFiles/vulkan-fdm.dir/EquationValue.cpp.o"
   "CMakeFiles/vulkan-fdm.dir/MatrixSystemOfEquations.cpp.o"
+  "CMakeFiles/vulkan-fdm.dir/MapMatrix.cpp.o"
   "vulkan-fdm.pdb"
   "vulkan-fdm"
 )

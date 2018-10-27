@@ -32,6 +32,10 @@ header.h
 
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/DimensionName.h
 
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/I_SystemOfEquations.h
+ComplexFloat.h
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/ComplexFloat.h
+
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Map.h
 header.h
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/header.h
@@ -44,17 +48,25 @@ header.h
 Map.h
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Map.h
 
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Matrix.h
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapMatrix.h
 header.h
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/header.h
+ComplexFloat.h
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/ComplexFloat.h
+MapValue.h
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapValue.h
+
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapValue.h
 ComplexFloat.h
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/ComplexFloat.h
 
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/MatrixSystemOfEquations.h
 header.h
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/header.h
-Matrix.h
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Matrix.h
+MapMatrix.h
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/MapMatrix.h
+I_SystemOfEquations.h
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/I_SystemOfEquations.h
 
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/RenderTriangle.h
 header.h
@@ -94,6 +106,10 @@ set
 
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/ScaleType.h
 
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Solver.cpp
+Solver.h
+/home/baronvladziu/Projects/Vulkan/FDM-3D/src/Solver.h
+
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/Solver.h
 header.h
 /home/baronvladziu/Projects/Vulkan/FDM-3D/src/header.h
@@ -130,6 +146,8 @@ list
 string
 -
 math.h
+-
+unordered_map
 -
 glm/geometric.hpp
 -

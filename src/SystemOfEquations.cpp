@@ -23,6 +23,9 @@ ComplexFloat SystemOfEquations::get(int x, int y) const {
 ComplexFloat SystemOfEquations::getConstant(int y) const {
     return _equations[y].getValue().getValue();
 }
+ComplexFloat SystemOfEquations::getSolution(int y) const {
+    getConstant(y);
+}
 void SystemOfEquations::set(int x, int y, ComplexFloat value) {
     assert(x >= 0);
     assert(x < _numberOfVariables);
@@ -84,7 +87,7 @@ void SystemOfEquations::solve() {
         i++;
     }
     Matrix matrix(newNumberOfValues + 1, newNumberOfValues);
-    matrix.fillWith(ComplexFloat(0.f, 0.f));
+    matrix.fillWithZeros();
     i = 0;
     eq = unsolvedEquations.begin();
     while (eq != unsolvedEquations.end()) {

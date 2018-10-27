@@ -8,9 +8,11 @@
 #include "header.h"
 #include "Equation.h"
 #include "Matrix.h"
+#include "I_SystemOfEquations.h"
 
 
-class SystemOfEquations {
+class SystemOfEquations
+        : public I_SystemOfEquations {
 
     const int _numberOfVariables;
     Equation * _equations;
@@ -20,6 +22,7 @@ public:
     int getNumberOfVariables() const;
     ComplexFloat get(int x, int y) const;
     ComplexFloat getConstant(int y) const;
+    ComplexFloat getSolution(int y) const;
     void set(int x, int y, ComplexFloat value);
     void setConstant(int y, ComplexFloat value);
     void solve();

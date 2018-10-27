@@ -11,6 +11,7 @@
 #include <list>
 #include <string>
 #include <math.h>
+#include <unordered_map>
 #include <glm/geometric.hpp>
 
 #endif //VULKAN_FDM_HEADER_H
