@@ -6,7 +6,7 @@
 
 Map MapLoader::loadMap(const std::string & wallsJsonPath, const std::string & speakersJsonPath,
                        const std::string & receiversJsonPath) const {
-
+    std::cout << "--- PARSING JSON FILES ---" << std::endl;
     Map resultMap;
     Range3D ranges = loadWalls(resultMap, wallsJsonPath);
     ranges += loadSpeakers(resultMap, speakersJsonPath);
@@ -276,6 +276,7 @@ Range3D MapLoader::loadSpeakers(Map & resultMap, const std::string & speakersJso
     int idA = 0;
     int idB = 0;
     int idC = 0;
+    ComplexFloat volume;
 
     MapLoaderState state = WAITING_FOR_FILE_START;
     std::fstream file;
@@ -435,6 +436,12 @@ Range3D MapLoader::loadSpeakers(Map & resultMap, const std::string & speakersJso
                 else if (word == "\"v3\":") {
                     state = WAITING_FOR_TRIANGLE_C;
                 }
+                else if (word == "\"volumeR\":") {
+                    state = WAITING_FOR_SPEAKER_VOLUME_R;
+                }
+                else if (word == "\"volumeI\":") {
+                    state = WAITING_FOR_SPEAKER_VOLUME_I;
+                }
                 else {
                     throw std::runtime_error(
                             "Error: While loading file " + speakersJsonPath + " , unknown triangle parameter: " + word +
@@ -477,7 +484,6 @@ Range3D MapLoader::loadSpeakers(Map & resultMap, const std::string & speakersJso
                 int value = std::stoi(strValue);
                 if (value < vertices.size()) {
                     idC = value;
-                    resultMap.addSpeakerTriange(RenderTriangle(TextureType::SPEAKER, vertices[idA], vertices[idB], vertices[idC]));
                     state = WAITING_FOR_ANOTHER_TRIANGLE_VALUE;
                 }
                 else {
@@ -485,6 +491,24 @@ Range3D MapLoader::loadSpeakers(Map & resultMap, const std::string & speakersJso
                             "Error: While loading file " + speakersJsonPath + " , found point id: " + strValue +
                             " that is out of range!");
                 }
+                break;
+            }
+            case WAITING_FOR_SPEAKER_VOLUME_R: {
+                std::string strValue = word;
+                float value = std::stof(strValue);
+                volume.imag = value;
+                state = WAITING_FOR_ANOTHER_TRIANGLE_VALUE;
+                break;
+            }
+            case WAITING_FOR_SPEAKER_VOLUME_I: {
+                std::string strValue = word;
+                float value = std::stof(strValue);
+                volume.imag = value;
+                if (volume == ComplexFloat(0,0)) {
+                    std::cout << "Warning: No value loaded for speaker!" << std::endl;
+                }
+                resultMap.addSpeakerTriange(RenderTriangle(TextureType::SPEAKER, vertices[idA], vertices[idB], vertices[idC], volume));
+                state = WAITING_FOR_ANOTHER_TRIANGLE_VALUE;
                 break;
             }
             case WAITING_FOR_FILE_END: {
@@ -498,6 +522,13 @@ Range3D MapLoader::loadSpeakers(Map & resultMap, const std::string & speakersJso
         }
     }
     file.close();
+
+    if (vertices.size() == 0) {
+        std::cout << "Error: No speaker vertices loaded!" << std::endl;
+    }
+    if (resultMap.getSpeakerTriangles().size() == 0) {
+        std::cout << "Error: No speaker triangles loaded!" << std::endl;
+    }
 
     //Find borders
     for (const RenderVertex v : vertices) {

@@ -12,6 +12,7 @@
 #include "ScaleType.h"
 #include "DimensionName.h"
 #include "JacobiSystemOfEquations.h"
+#include "SolverConfiguration.h"
 
 
 class Solver {
@@ -20,11 +21,9 @@ class Solver {
 //    constexpr static float _DENSITY_OF_AIR = 1.225f;
 //    constexpr static float _PLANE_WAVE_IMPEDANCE = _DENSITY_OF_AIR*_SOUND_SPEED;
     constexpr static float _PI() { return float(std::atan(1)*4); };
-    constexpr static int _MINIMAL_NUMBER_OF_POINTS_PER_PERIOD = 8;
     constexpr static float _REFERENCE_PRESSURE = 0.00002f;
 
     constexpr static float _ARROW_SIZE = 0.03f;
-    constexpr static float _DOT_SIZE = 0.06f;
 
     constexpr static int _NUMBER_OF_THIRD_OCTAVE_BANDS = 45;
     constexpr static float _THIRD_OCTAVE_BANDS[_NUMBER_OF_THIRD_OCTAVE_BANDS] =
@@ -56,12 +55,11 @@ class Solver {
     bool *** _cubeMatrix;
 
 public:
-    std::list<RenderTriangle> solveRoom(const Map & map, float frequency,
-            Complex2RealType resultType, ScaleType scaleType);
-    void solveReceivers(const Map & map, float minFrequency, float maxFrequency);
+    std::unique_ptr<std::list<RenderTriangle>> solveRoom(const Map & map, const SolverConfiguration & config);
+    std::unique_ptr<std::list<RenderTriangle>> solveReceivers(const Map & map, const SolverConfiguration & config);
 
 private:
-    std::list<RenderTriangle> markAndCreateCubes(bool *** cubeMatrix, SolverPoint *** grid,
+    std::unique_ptr<std::list<RenderTriangle>> markAndCreateCubes(bool *** cubeMatrix, SolverPoint *** grid,
             const std::list<RenderTriangle> & trianglesToCube, TextureType textureID, bool isSource) const;
     std::list<glm::ivec3> findCubesOnLine(const glm::ivec3 & point1, const glm::ivec3 & point2) const;
     JacobiSystemOfEquations createSystemOfEquations(SolverPoint *** grid) const;
@@ -76,8 +74,11 @@ private:
                     int i, int j, int k) const;
     void setBorderZ(JacobiSystemOfEquations & systemOfEquations, int actRealID, int actImagID,
                     int i, int j, int k) const;
-    void createGrid(const Map & map, float frequency);
+    void createGrid(const Map & map, float frequency, int minNumberOfPointsPerPeriod);
     void deleteGrid() const;
+    std::unique_ptr<std::list<RenderTriangle>> createSolutionTriangles(const JacobiSystemOfEquations & equations,
+            const SolverConfiguration & config, const std::list<RenderTriangle> & wallTriangles,
+            const std::list<RenderTriangle> & speakerTriangles) const;
 
 };
 

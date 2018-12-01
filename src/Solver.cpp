@@ -10,19 +10,19 @@ constexpr float Solver::_THIRD_OCTAVE_BANDS[];
 constexpr float Solver::_OCTAVE_BANDS[];
 
 //public:
-std::list<RenderTriangle> Solver::solveRoom(const Map & map, float frequency, Complex2RealType resultType, ScaleType scaleType) {
+std::unique_ptr<std::list<RenderTriangle>> Solver::solveRoom(const Map & map, const SolverConfiguration & config) {
 
     std::cout << "\n--- SOLVING ROOM FOR VISUALIZATION ---" << std::endl;
-    createGrid(map, frequency);
+    createGrid(map, config.MAIN_FREQUENCY, config.MINIMAL_NUMBER_OF_POINTS_PER_PERIOD);
 
     //Prepare triangles
     const std::list<RenderTriangle> & wallTriangles = map.getWallTriangles();
     const std::list<RenderTriangle> & speakerTriangles = map.getSpeakerTriangles();
 
     //--- SET WALLS---//
-    std::list<RenderTriangle> cubeTriangles = markAndCreateCubes(_cubeMatrix, _grid, wallTriangles, TextureType::WALL, false);
-    std::list<RenderTriangle> cubesSpeakerTriangles = markAndCreateCubes(_cubeMatrix, _grid, speakerTriangles, TextureType::SPEAKER, true);
-    cubeTriangles.insert(cubeTriangles.end(), cubesSpeakerTriangles.begin(), cubesSpeakerTriangles.end());
+    std::unique_ptr<std::list<RenderTriangle>> cubeTriangles = markAndCreateCubes(_cubeMatrix, _grid, wallTriangles, TextureType::WALL, false);
+    std::unique_ptr<std::list<RenderTriangle>> cubesSpeakerTriangles = markAndCreateCubes(_cubeMatrix, _grid, speakerTriangles, TextureType::SPEAKER, true);
+    cubeTriangles->insert(cubeTriangles->end(), cubesSpeakerTriangles->begin(), cubesSpeakerTriangles->end());
 
     //Print equations
 //    std::cout << "Saving results:" << std::endl;
@@ -44,152 +44,26 @@ std::list<RenderTriangle> Solver::solveRoom(const Map & map, float frequency, Co
 
     deleteGrid();
 
-    //--- CREATE SOLUTION CUBES ---//
-    std::cout << "Creating models:" << std::endl;
-    //Create result array
-    float * resultArray = new float[equations.getNumberOfVariables()/2];
-    std::cout << "Length: " << equations.getNumberOfVariables()/2 << std::endl;
-    switch (scaleType) {
-        case LINEAR: {
-            switch (resultType) {
-                case REAL: {
-                    for (int i = 0; i < equations.getNumberOfVariables()/2; i++) {
-                        resultArray[i] = equations.getSolution(2*i);
-                        std::cout << resultArray[i] << '\t';
-                    }
-                    break;
-                }
-                case IMAG: {
-                    for (int i = 0; i < equations.getNumberOfVariables()/2; i++) {
-                        resultArray[i] = equations.getSolution(2*i+1);
-                    }
-                    break;
-                }
-                case ABS: {
-                    for (int i = 0; i < equations.getNumberOfVariables()/2; i++) {
-                        resultArray[i] = sqrt(equations.getSolution(2*i)*equations.getSolution(2*i) +
-                                equations.getSolution(2*i+1)*equations.getSolution(2*i+1));
-                    }
-                    break;
-                }
-            }
-            break;
-        }
-        case DECIBELS: {
-            switch (resultType) {
-                case REAL: {
-                    for (int i = 0; i < equations.getNumberOfVariables()/2; i++) {
-                        resultArray[i] = 20 * std::log10(abs(equations.getSolution(2*i)) / _REFERENCE_PRESSURE);
-                        if (std::isnan(resultArray[i]) || resultArray[i] < 0) {
-                            resultArray[i] = 0;
-                        }
-                    }
-                    break;
-                }
-                case IMAG: {
-                    for (int i = 0; i < equations.getNumberOfVariables()/2; i++) {
-                        resultArray[i] = 20 * std::log10(abs(equations.getSolution(2*i+1)) / _REFERENCE_PRESSURE);
-                        if (std::isnan(resultArray[i]) || resultArray[i] < 0) {
-                            resultArray[i] = 0;
-                        }
-                    }
-                    break;
-                }
-                case ABS: {
-                    for (int i = 0; i < equations.getNumberOfVariables()/2; i++) {
-                        resultArray[i] = 20 * std::log10(sqrt(equations.getSolution(2*i)*equations.getSolution(2*i) +
-                                equations.getSolution(2*i+1)*equations.getSolution(2*i+1)) / _REFERENCE_PRESSURE);
-                        if (std::isnan(resultArray[i]) || resultArray[i] < 0) {
-                            resultArray[i] = 0;
-                        }
-                    }
-                    break;
-                }
-            }
-            break;
-        }
-    }
-
-    //Find max and min results
-    float maxResult = resultArray[0];
-    float minResult = resultArray[0];
-    for (int i = 0; i < equations.getNumberOfVariables()/2; i++) {
-        if (!std::isinf(resultArray[i])) {
-            float actResult = resultArray[i];
-            if (actResult > maxResult) {
-                maxResult = actResult;
-            }
-            if (actResult < minResult) {
-                minResult = actResult;
-            }
-        }
-    }
-    std::cout << "\nVisualized result:" << std::endl;
-    for (int i = 0; i < equations.getNumberOfVariables()/2; i++) {
-        if (std::isinf(resultArray[i])) {
-            if (resultArray[i] > 0) {
-                resultArray[i] = maxResult;
-            } else {
-                resultArray[i] = minResult;
-            }
-        }
-        std::cout << resultArray[i] << " \t";
-    }
-    std::cout << "\nMax result: " << maxResult << std::endl;
-    maxResult *= 1.01f; //To prevent blending with other textures
-    std::cout << "Min result: " << minResult << std::endl;
-    std::cout << std::endl;
-
-    //Create triangles
-    std::list<RenderTriangle> solutionTriangles;
-    for (int ix = 0; ix < _pointMatrixSizeX + 1; ix++) {
-        for (int iy = 0; iy < _pointMatrixSizeY + 1; iy++) {
-            for (int iz = 0; iz < _pointMatrixSizeZ + 1; iz++) {
-                //Trangle corners
-                glm::vec3 pointCenter = glm::vec3((ix * _edgeLength) + _minX, (iy * _edgeLength) + _minY, (iz * _edgeLength) + _minZ);
-                float colorValue = (resultArray[calculateVariableIndex(ix, iy, iz, false)/2] - minResult) / (maxResult - minResult);
-                RenderVertex cornerXp = RenderVertex(glm::vec3(pointCenter + glm::vec3(_DOT_SIZE, 0, 0)), colorValue, colorValue);
-                RenderVertex cornerXm = RenderVertex(glm::vec3(pointCenter + glm::vec3(-_DOT_SIZE, 0, 0)), colorValue, colorValue);
-                RenderVertex cornerYp = RenderVertex(glm::vec3(pointCenter + glm::vec3(0, _DOT_SIZE, 0)), colorValue, colorValue);
-                RenderVertex cornerYm = RenderVertex(glm::vec3(pointCenter + glm::vec3(0, -_DOT_SIZE, 0)), colorValue, colorValue);
-                RenderVertex cornerZp = RenderVertex(glm::vec3(pointCenter + glm::vec3(0, 0, _DOT_SIZE)), colorValue, colorValue);
-                RenderVertex cornerZm = RenderVertex(glm::vec3(pointCenter + glm::vec3(0, 0, -_DOT_SIZE)), colorValue, colorValue);
-                //Create triangles
-                solutionTriangles.emplace_back(RenderTriangle(TextureType::COLOR, cornerXp, cornerYp, cornerZp));
-                solutionTriangles.emplace_back(RenderTriangle(TextureType::COLOR, cornerZp, cornerYp, cornerXm));
-                solutionTriangles.emplace_back(RenderTriangle(TextureType::COLOR, cornerZp, cornerYm, cornerXp));
-                solutionTriangles.emplace_back(RenderTriangle(TextureType::COLOR, cornerXm, cornerYm, cornerZp));
-                solutionTriangles.emplace_back(RenderTriangle(TextureType::COLOR, cornerZm, cornerYp, cornerXp));
-                solutionTriangles.emplace_back(RenderTriangle(TextureType::COLOR, cornerXm, cornerYp, cornerZm));
-                solutionTriangles.emplace_back(RenderTriangle(TextureType::COLOR, cornerXp, cornerYm, cornerZm));
-                solutionTriangles.emplace_back(RenderTriangle(TextureType::COLOR, cornerZm, cornerYm, cornerXm));
-            }
-        }
-    }
-    //Cleanup
-    delete[] resultArray;
-    //Concatenate triangles
-    solutionTriangles.insert(solutionTriangles.end(), wallTriangles.begin(), wallTriangles.end());
-    solutionTriangles.insert(solutionTriangles.end(), speakerTriangles.begin(), speakerTriangles.end());
-
-    return solutionTriangles;
-//    return cubeTriangles;
+    return createSolutionTriangles(equations, config, wallTriangles, speakerTriangles);
 }
-void Solver::solveReceivers(const Map & map, float minFrequency, float maxFrequency) {
+std::unique_ptr<std::list<RenderTriangle>> Solver::solveReceivers(const Map & map, const SolverConfiguration & config) {
     std::list<std::pair<float, ComplexFloat>> * results = new std::list<std::pair<float, ComplexFloat>>[map.getReceivers().size()];
-    for (float freqBand : _THIRD_OCTAVE_BANDS) {
-        if (freqBand >= minFrequency && freqBand <= maxFrequency) {
+    std::unique_ptr<std::list<RenderTriangle>> solutionTriangles;
+    bool areSolutionTrianglesSaved = false;
+    for (int bandID = _NUMBER_OF_THIRD_OCTAVE_BANDS - 1; bandID >= 0; bandID--) {
+        float freqBand = _THIRD_OCTAVE_BANDS[bandID];
+        if (freqBand >= config.START_FREQUENCY && freqBand <= config.STOP_FREQUENCY) {
             std::cout << "\n--- SOLVING FOR " << freqBand << " Hz ---" << std::endl;
-            createGrid(map, freqBand);
+            createGrid(map, freqBand, config.MINIMAL_NUMBER_OF_POINTS_PER_PERIOD);
 
             //Prepare triangles
             const std::list<RenderTriangle> & wallTriangles = map.getWallTriangles();
             const std::list<RenderTriangle> & speakerTriangles = map.getSpeakerTriangles();
 
             //--- SET WALLS---//
-            std::list<RenderTriangle> cubeTriangles = markAndCreateCubes(_cubeMatrix, _grid, wallTriangles, TextureType::WALL, false);
-            std::list<RenderTriangle> cubesSpeakerTriangles = markAndCreateCubes(_cubeMatrix, _grid, speakerTriangles, TextureType::SPEAKER, true);
-            cubeTriangles.insert(cubeTriangles.end(), cubesSpeakerTriangles.begin(), cubesSpeakerTriangles.end());
+            std::unique_ptr<std::list<RenderTriangle>> cubeTriangles = markAndCreateCubes(_cubeMatrix, _grid, wallTriangles, TextureType::WALL, false);
+            std::unique_ptr<std::list<RenderTriangle>> cubesSpeakerTriangles = markAndCreateCubes(_cubeMatrix, _grid, speakerTriangles, TextureType::SPEAKER, true);
+            cubeTriangles->insert(cubeTriangles->end(), cubesSpeakerTriangles->begin(), cubesSpeakerTriangles->end());
 
             //--- SOLVE EQUATIONS ---//
             JacobiSystemOfEquations equations = createSystemOfEquations(_grid);
@@ -270,6 +144,11 @@ void Solver::solveReceivers(const Map & map, float minFrequency, float maxFreque
                 results[receiverID].emplace_back(std::pair<float, ComplexFloat>(freqBand, ComplexFloat(realNumerator/denominator, imagNumerator/denominator)));
                 receiverID++;
             }
+
+            if (!areSolutionTrianglesSaved) {
+                solutionTriangles = createSolutionTriangles(equations, config, wallTriangles, speakerTriangles);
+                areSolutionTrianglesSaved = true;
+            }
         }
     }
 
@@ -286,10 +165,14 @@ void Solver::solveReceivers(const Map & map, float minFrequency, float maxFreque
     myfile.close();
 
     delete[] results;
+    if (!areSolutionTrianglesSaved) {
+        std::cout << "Error: solution triangles were not saved!" << std::endl;
+    }
+    return solutionTriangles;
 }
 
 //private:
-std::list<RenderTriangle> Solver::markAndCreateCubes(bool *** cubeMatrix, SolverPoint *** grid,
+std::unique_ptr<std::list<RenderTriangle>> Solver::markAndCreateCubes(bool *** cubeMatrix, SolverPoint *** grid,
         const std::list<RenderTriangle> & trianglesToCube, TextureType textureID, bool isSource) const {
     //--- CREATE CUBES ---//
     std::list<RenderTriangle> cubeRenderTriangles;
@@ -383,43 +266,43 @@ std::list<RenderTriangle> Solver::markAndCreateCubes(bool *** cubeMatrix, Solver
                         pointPPP.setTexPosition(1.f, 0.f);
                         pointPPN.setTexPosition(1.f, 1.f);
                         pointPNN.setTexPosition(0.f, 1.f);
-                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointPNN, pointPPN, pointPPP));
-                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointPPP, pointPNP, pointPNN));
+                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointPNN, pointPPN, pointPPP, renT.getValue()));
+                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointPPP, pointPNP, pointPNN, renT.getValue()));
                         //Create -X plane
                         pointNPP.setTexPosition(0.f, 0.f);
                         pointNPN.setTexPosition(0.f, 1.f);
                         pointNNN.setTexPosition(1.f, 1.f);
                         pointNNP.setTexPosition(1.f, 0.f);
-                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointNPP, pointNPN, pointNNN));
-                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointNNN, pointNNP, pointNPP));
+                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointNPP, pointNPN, pointNNN, renT.getValue()));
+                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointNNN, pointNNP, pointNPP, renT.getValue()));
                         //Create +Y plane
                         pointNPP.setTexPosition(1.f, 0.f);
                         pointPPP.setTexPosition(0.f, 0.f);
                         pointPPN.setTexPosition(0.f, 1.f);
                         pointNPN.setTexPosition(1.f, 1.f);
-                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointNPP, pointPPP, pointPPN));
-                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointPPN, pointNPN, pointNPP));
+                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointNPP, pointPPP, pointPPN, renT.getValue()));
+                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointPPN, pointNPN, pointNPP, renT.getValue()));
                         //Create -Y plane
                         pointNNP.setTexPosition(0.f, 0.f);
                         pointPNP.setTexPosition(1.f, 0.f);
                         pointPNN.setTexPosition(1.f, 1.f);
                         pointNNN.setTexPosition(0.f, 1.f);
-                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointNNP, pointNNN, pointPNN));
-                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointPNN, pointPNP, pointNNP));
+                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointNNP, pointNNN, pointPNN, renT.getValue()));
+                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointPNN, pointPNP, pointNNP, renT.getValue()));
                         //Create +Z plane
                         pointNPP.setTexPosition(1.f, 1.f);
                         pointPPP.setTexPosition(0.f, 1.f);
                         pointPNP.setTexPosition(0.f, 0.f);
                         pointNNP.setTexPosition(1.f, 0.f);
-                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointNPP, pointNNP, pointPNP));
-                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointPNP, pointPPP, pointNPP));
+                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointNPP, pointNNP, pointPNP, renT.getValue()));
+                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointPNP, pointPPP, pointNPP, renT.getValue()));
                         //Create -Z plane
                         pointNPN.setTexPosition(0.f, 0.f);
                         pointPPN.setTexPosition(1.f, 0.f);
                         pointPNN.setTexPosition(1.f, 1.f);
                         pointNNN.setTexPosition(0.f, 1.f);
-                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointNPN, pointPPN, pointPNN));
-                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointPNN, pointNNN, pointNPN));
+                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointNPN, pointPPN, pointPNN, renT.getValue()));
+                        cubeRenderTriangles.emplace_back(RenderTriangle(textureID, pointPNN, pointNNN, pointNPN, renT.getValue()));
                     }
                 }
             }
@@ -488,14 +371,14 @@ std::list<RenderTriangle> Solver::markAndCreateCubes(bool *** cubeMatrix, Solver
                 for (int j = 0; j < _pointMatrixSizeY; j++) {
                     for (int i = 0; i < _pointMatrixSizeX; i++) {
                         if (cubeMatrix[i][j][k]) {
-                            grid[i][j][k].setToSource(ComplexFloat(1.f, 0.f));
-                            grid[i+1][j][k].setToSource(ComplexFloat(1.f, 0.f));
-                            grid[i][j+1][k].setToSource(ComplexFloat(1.f, 0.f));
-                            grid[i+1][j+1][k].setToSource(ComplexFloat(1.f, 0.f));
-                            grid[i][j][k+1].setToSource(ComplexFloat(1.f, 0.f));
-                            grid[i+1][j][k+1].setToSource(ComplexFloat(1.f, 0.f));
-                            grid[i][j+1][k+1].setToSource(ComplexFloat(1.f, 0.f));
-                            grid[i+1][j+1][k+1].setToSource(ComplexFloat(1.f, 0.f));
+                            grid[i][j][k].setToSource(renT.getValue());
+                            grid[i+1][j][k].setToSource(renT.getValue());
+                            grid[i][j+1][k].setToSource(renT.getValue());
+                            grid[i+1][j+1][k].setToSource(renT.getValue());
+                            grid[i][j][k+1].setToSource(renT.getValue());
+                            grid[i+1][j][k+1].setToSource(renT.getValue());
+                            grid[i][j+1][k+1].setToSource(renT.getValue());
+                            grid[i+1][j+1][k+1].setToSource(renT.getValue());
                         }
                     }
                 }
@@ -568,9 +451,9 @@ std::list<RenderTriangle> Solver::markAndCreateCubes(bool *** cubeMatrix, Solver
                 }
             }
         }
-        return normalsRenderTriangles;
+        return std::unique_ptr<std::list<RenderTriangle>>(new std::list<RenderTriangle>(normalsRenderTriangles));
     } else {
-        return cubeRenderTriangles;
+        return std::unique_ptr<std::list<RenderTriangle>>(new std::list<RenderTriangle>(cubeRenderTriangles));
     }
 
 
@@ -1145,10 +1028,10 @@ void Solver::setBorderZ(JacobiSystemOfEquations & systemOfEquations, int actReal
     systemOfEquations.set(calculateVariableIndex(i,j,k+1,true), actImagID, 1.f);
     systemOfEquations.set(calculateVariableIndex(i,j,k-1,true), actImagID, 1.f);
 }
-void Solver::createGrid(const Map & map, float frequency) {
+void Solver::createGrid(const Map & map, float frequency, int minNumberOfPointsPerPeriod) {
     //--- CREATE GRID ---//
     //Calculate constants
-    _numberOfPointsPerPeriod = _MINIMAL_NUMBER_OF_POINTS_PER_PERIOD - 1;
+    _numberOfPointsPerPeriod = minNumberOfPointsPerPeriod - 1;
     const int MIN_GRID_SIZE = 3;
     do {
         _numberOfPointsPerPeriod++;
@@ -1205,4 +1088,138 @@ void Solver::deleteGrid() const {
         delete[] _cubeMatrix[i];
     }
     delete[] _cubeMatrix;
+}
+std::unique_ptr<std::list<RenderTriangle>> Solver::createSolutionTriangles(const JacobiSystemOfEquations & equations,
+        const SolverConfiguration & config, const std::list<RenderTriangle> & wallTriangles,
+        const std::list<RenderTriangle> & speakerTriangles) const {
+    //--- CREATE SOLUTION CUBES ---//
+    std::cout << "Creating models:" << std::endl;
+    //Create result array
+    float * resultArray = new float[equations.getNumberOfVariables()/2];
+    std::cout << "Length: " << equations.getNumberOfVariables()/2 << std::endl;
+    switch (config.SCALE_TYPE) {
+        case LINEAR: {
+            switch (config.COMPLEX_TYPE) {
+                case REAL: {
+                    for (int i = 0; i < equations.getNumberOfVariables()/2; i++) {
+                        resultArray[i] = equations.getSolution(2*i);
+                        std::cout << resultArray[i] << '\t';
+                    }
+                    break;
+                }
+                case IMAG: {
+                    for (int i = 0; i < equations.getNumberOfVariables()/2; i++) {
+                        resultArray[i] = equations.getSolution(2*i+1);
+                    }
+                    break;
+                }
+                case ABS: {
+                    for (int i = 0; i < equations.getNumberOfVariables()/2; i++) {
+                        resultArray[i] = sqrt(equations.getSolution(2*i)*equations.getSolution(2*i) +
+                                              equations.getSolution(2*i+1)*equations.getSolution(2*i+1));
+                    }
+                    break;
+                }
+            }
+            break;
+        }
+        case DECIBELS: {
+            switch (config.COMPLEX_TYPE) {
+                case REAL: {
+                    for (int i = 0; i < equations.getNumberOfVariables()/2; i++) {
+                        resultArray[i] = 20 * std::log10(abs(equations.getSolution(2*i)) / _REFERENCE_PRESSURE);
+                        if (std::isnan(resultArray[i]) || resultArray[i] < 0) {
+                            resultArray[i] = 0;
+                        }
+                    }
+                    break;
+                }
+                case IMAG: {
+                    for (int i = 0; i < equations.getNumberOfVariables()/2; i++) {
+                        resultArray[i] = 20 * std::log10(abs(equations.getSolution(2*i+1)) / _REFERENCE_PRESSURE);
+                        if (std::isnan(resultArray[i]) || resultArray[i] < 0) {
+                            resultArray[i] = 0;
+                        }
+                    }
+                    break;
+                }
+                case ABS: {
+                    for (int i = 0; i < equations.getNumberOfVariables()/2; i++) {
+                        resultArray[i] = 20 * std::log10(sqrt(equations.getSolution(2*i)*equations.getSolution(2*i) +
+                                                              equations.getSolution(2*i+1)*equations.getSolution(2*i+1)) / _REFERENCE_PRESSURE);
+                        if (std::isnan(resultArray[i]) || resultArray[i] < 0) {
+                            resultArray[i] = 0;
+                        }
+                    }
+                    break;
+                }
+            }
+            break;
+        }
+    }
+
+    //Find max and min results
+    float maxResult = resultArray[0];
+    float minResult = resultArray[0];
+    for (int i = 0; i < equations.getNumberOfVariables()/2; i++) {
+        if (!std::isinf(resultArray[i])) {
+            float actResult = resultArray[i];
+            if (actResult > maxResult) {
+                maxResult = actResult;
+            }
+            if (actResult < minResult) {
+                minResult = actResult;
+            }
+        }
+    }
+    std::cout << "\nVisualized result:" << std::endl;
+    for (int i = 0; i < equations.getNumberOfVariables()/2; i++) {
+        if (std::isinf(resultArray[i])) {
+            if (resultArray[i] > 0) {
+                resultArray[i] = maxResult;
+            } else {
+                resultArray[i] = minResult;
+            }
+        }
+        std::cout << resultArray[i] << " \t";
+    }
+    std::cout << "\nMax result: " << maxResult << std::endl;
+    maxResult *= 1.01f; //To prevent blending with other textures
+    std::cout << "Min result: " << minResult << std::endl;
+    std::cout << std::endl;
+
+    //Create triangles
+    std::list<RenderTriangle> solutionTriangles;
+    for (int ix = 0; ix < _pointMatrixSizeX + 1; ix++) {
+        for (int iy = 0; iy < _pointMatrixSizeY + 1; iy++) {
+            for (int iz = 0; iz < _pointMatrixSizeZ + 1; iz++) {
+                //Trangle corners
+                glm::vec3 pointCenter = glm::vec3((ix * _edgeLength) + _minX, (iy * _edgeLength) + _minY, (iz * _edgeLength) + _minZ);
+                float colorValue = (resultArray[calculateVariableIndex(ix, iy, iz, false)/2] - minResult) / (maxResult - minResult);
+                RenderVertex cornerXp = RenderVertex(glm::vec3(pointCenter + glm::vec3(config.DOT_SIZE, 0, 0)), colorValue, colorValue);
+                RenderVertex cornerXm = RenderVertex(glm::vec3(pointCenter + glm::vec3(-config.DOT_SIZE, 0, 0)), colorValue, colorValue);
+                RenderVertex cornerYp = RenderVertex(glm::vec3(pointCenter + glm::vec3(0, config.DOT_SIZE, 0)), colorValue, colorValue);
+                RenderVertex cornerYm = RenderVertex(glm::vec3(pointCenter + glm::vec3(0, -config.DOT_SIZE, 0)), colorValue, colorValue);
+                RenderVertex cornerZp = RenderVertex(glm::vec3(pointCenter + glm::vec3(0, 0, config.DOT_SIZE)), colorValue, colorValue);
+                RenderVertex cornerZm = RenderVertex(glm::vec3(pointCenter + glm::vec3(0, 0, -config.DOT_SIZE)), colorValue, colorValue);
+                //Create triangles
+                solutionTriangles.emplace_back(RenderTriangle(TextureType::COLOR, cornerXp, cornerYp, cornerZp));
+                solutionTriangles.emplace_back(RenderTriangle(TextureType::COLOR, cornerZp, cornerYp, cornerXm));
+                solutionTriangles.emplace_back(RenderTriangle(TextureType::COLOR, cornerZp, cornerYm, cornerXp));
+                solutionTriangles.emplace_back(RenderTriangle(TextureType::COLOR, cornerXm, cornerYm, cornerZp));
+                solutionTriangles.emplace_back(RenderTriangle(TextureType::COLOR, cornerZm, cornerYp, cornerXp));
+                solutionTriangles.emplace_back(RenderTriangle(TextureType::COLOR, cornerXm, cornerYp, cornerZm));
+                solutionTriangles.emplace_back(RenderTriangle(TextureType::COLOR, cornerXp, cornerYm, cornerZm));
+                solutionTriangles.emplace_back(RenderTriangle(TextureType::COLOR, cornerZm, cornerYm, cornerXm));
+            }
+        }
+    }
+    //Cleanup
+    delete[] resultArray;
+    //Concatenate triangles
+    solutionTriangles.insert(solutionTriangles.end(), wallTriangles.begin(), wallTriangles.end());
+    solutionTriangles.insert(solutionTriangles.end(), speakerTriangles.begin(), speakerTriangles.end());
+
+    return std::unique_ptr<std::list<RenderTriangle>>(new std::list<RenderTriangle>(solutionTriangles));
+//    return cubeTriangles;
 }

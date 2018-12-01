@@ -7,6 +7,7 @@
 #include "Map.h"
 #include "MapLoader.h"
 #include "Solver.h"
+#include "SolverConfiguration.h"
 
 
 App::App() {
@@ -14,11 +15,17 @@ App::App() {
     std::string name("diffraction");
     MapLoader mapLoader;
     Map map = mapLoader.loadMap("../maps/" + name + "-w.json", "../maps/" + name + "-s.json", "../maps/" + name + "-r.json");
+
+    SolverConfiguration config("../maps/config.json");
+
     Solver solver;
-
-//    solver.solveReceivers(map, 0, 400);
-    std::list<RenderTriangle> solverTriangles = solver.solveRoom(map, 400, Complex2RealType::REAL, ScaleType::DECIBELS);
-
+    std::list<RenderTriangle> solverTriangles;
+    if (config.START_FREQUENCY < config.STOP_FREQUENCY) {
+        solverTriangles = *solver.solveReceivers(map, config);
+    }
+    if (config.MAIN_FREQUENCY != 0.f) {
+        solverTriangles = *solver.solveRoom(map, config);
+    }
 
     std::list<RenderTriangle> triangles; //TODO: uses unnecessary memory
     triangles.insert(triangles.end(), map.getWallTriangles().begin(), map.getWallTriangles().end());
