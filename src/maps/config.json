@@ -1,0 +1,11 @@
+{
+  "config": {
+    "minimalNumberOfPointsPerPeriod": 8,
+    "dotSize": 0.06,
+    "startFrequency": 0,
+    "endFrequency": 0,
+    "mainFrequency": 300,
+    "complexType": "imag",
+    "scaleType": "decibels"
+  }
+}
