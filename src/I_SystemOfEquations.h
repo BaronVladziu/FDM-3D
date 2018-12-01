@@ -15,8 +15,8 @@ public:
     virtual ComplexFloat get(int x, int y) const = 0;
     virtual ComplexFloat getConstant(int y) const = 0;
     virtual ComplexFloat getSolution(int y) const = 0;
-    virtual void set(int x, int y, ComplexFloat value) = 0;
-    virtual void setConstant(int y, ComplexFloat value) = 0;
+    virtual void set(int x, int y, const ComplexFloat & value) = 0;
+    virtual void setConstant(int y, const ComplexFloat & value) = 0;
     virtual void solve() = 0;
     virtual void print(int y) const = 0;
     

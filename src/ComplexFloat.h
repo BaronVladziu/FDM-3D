@@ -14,9 +14,11 @@ public:
     float real;
     float imag;
 
-    ComplexFloat() = default;
+    ComplexFloat();
+    explicit ComplexFloat(float realPart);
     ComplexFloat(float realPart, float imaginaryPart);
     ComplexFloat getRoot(int p) const;
+    ComplexFloat getConjugate() const;
     ComplexFloat operator+(const ComplexFloat & x) const;
     void operator+=(const ComplexFloat & x);
     ComplexFloat operator-(const ComplexFloat & x) const;
@@ -28,7 +30,9 @@ public:
     void operator/=(float k);
     ComplexFloat operator/(const float & k) const;
     bool operator==(const ComplexFloat & x) const;
+    bool operator==(float x) const;
     bool operator!=(const ComplexFloat & x) const;
+    bool operator!=(float x) const;
     float abs() const;
     float phase() const;
     std::string toString() const;

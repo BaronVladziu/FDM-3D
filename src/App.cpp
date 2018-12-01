@@ -10,10 +10,15 @@
 
 
 App::App() {
+    srand(time(NULL));
+    std::string name("diffraction");
     MapLoader mapLoader;
-    Map map = mapLoader.loadMap("../maps/room.json", "../maps/speakers.json");
+    Map map = mapLoader.loadMap("../maps/" + name + "-w.json", "../maps/" + name + "-s.json", "../maps/" + name + "-r.json");
     Solver solver;
-    std::list<RenderTriangle> solverTriangles = solver.solveRoom(map, 150, Complex2RealType::REAL, ScaleType::DECIBELS);
+
+//    solver.solveReceivers(map, 0, 400);
+    std::list<RenderTriangle> solverTriangles = solver.solveRoom(map, 400, Complex2RealType::REAL, ScaleType::DECIBELS);
+
 
     std::list<RenderTriangle> triangles; //TODO: uses unnecessary memory
     triangles.insert(triangles.end(), map.getWallTriangles().begin(), map.getWallTriangles().end());

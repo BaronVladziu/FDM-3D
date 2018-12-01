@@ -65,7 +65,7 @@ void Renderer::init(const std::list<RenderTriangle> & renderTriangles) {
             actVID++;
         }
     }
-    std::cout << "Indices vector size:" << indices.size() << std::endl;
+    std::cout << "Indices vector size: " << indices.size() << std::endl;
 
     initWindow();
     initVulkan();

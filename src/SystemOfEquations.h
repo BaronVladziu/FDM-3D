@@ -23,8 +23,8 @@ public:
     ComplexFloat get(int x, int y) const;
     ComplexFloat getConstant(int y) const;
     ComplexFloat getSolution(int y) const;
-    void set(int x, int y, ComplexFloat value);
-    void setConstant(int y, ComplexFloat value);
+    void set(int x, int y, const ComplexFloat & value);
+    void setConstant(int y, const ComplexFloat & value);
     void solve();
     void print(int y) const;
     ~SystemOfEquations();

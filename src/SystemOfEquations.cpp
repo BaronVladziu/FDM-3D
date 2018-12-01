@@ -26,14 +26,14 @@ ComplexFloat SystemOfEquations::getConstant(int y) const {
 ComplexFloat SystemOfEquations::getSolution(int y) const {
     getConstant(y);
 }
-void SystemOfEquations::set(int x, int y, ComplexFloat value) {
+void SystemOfEquations::set(int x, int y, const ComplexFloat & value) {
     assert(x >= 0);
     assert(x < _numberOfVariables);
     assert(y >= 0);
     assert(y < _numberOfVariables);
     _equations[y].addVariable(EquationValue(x, value));
 }
-void SystemOfEquations::setConstant(int y, ComplexFloat value) {
+void SystemOfEquations::setConstant(int y, const ComplexFloat & value) {
     _equations[y].setValue(value);
 }
 void SystemOfEquations::solve() {
@@ -86,7 +86,7 @@ void SystemOfEquations::solve() {
         eq++;
         i++;
     }
-    Matrix matrix(newNumberOfValues + 1, newNumberOfValues);
+    Matrix<ComplexFloat> matrix(newNumberOfValues + 1, newNumberOfValues);
     matrix.fillWithZeros();
     i = 0;
     eq = unsolvedEquations.begin();

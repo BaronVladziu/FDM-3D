@@ -7,6 +7,7 @@
 
 #include "header.h"
 #include "Map.h"
+#include "Range3D.h"
 
 
 enum MapLoaderState {
@@ -31,7 +32,13 @@ enum MapLoaderState {
 class MapLoader {
 
 public:
-    Map loadMap(const std::string & wallsJsonPath, const std::string & speakersJsonPath) const;
+    Map loadMap(const std::string & wallsJsonPath, const std::string & speakersJsonPath,
+                const std::string & receiversJsonPath) const;
+
+private:
+    Range3D loadWalls(Map & resultMap, const std::string & wallsJsonPath) const;
+    Range3D loadSpeakers(Map & resultMap, const std::string & speakersJsonPath) const;
+    Range3D loadReceivers(Map & resultMap, const std::string & receiversJsonPath) const;
 
 };
 

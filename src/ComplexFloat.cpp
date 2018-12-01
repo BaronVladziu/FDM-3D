@@ -5,6 +5,12 @@
 #include "ComplexFloat.h"
 
 
+ComplexFloat::ComplexFloat()
+    : real(0.f), imag(0.f)
+{}
+ComplexFloat::ComplexFloat(float realPart)
+    : real(realPart), imag(0.f)
+{}
 ComplexFloat::ComplexFloat(float realPart, float imaginaryPart)
     : real(realPart), imag(imaginaryPart)
 {}
@@ -12,6 +18,9 @@ ComplexFloat ComplexFloat::getRoot(int p) const {
     float resultAbs = float(std::pow(abs(), 1/p));
     float resultPhase = phase() / p;
     return ComplexFloat(resultAbs*std::cos(resultPhase), resultAbs*std::sin(resultPhase));
+}
+ComplexFloat ComplexFloat::getConjugate() const {
+    return ComplexFloat(real, -imag);
 }
 ComplexFloat ComplexFloat::operator+(const ComplexFloat & x) const {
     return ComplexFloat(real + x.real, imag + x.imag);
@@ -53,8 +62,14 @@ ComplexFloat ComplexFloat::operator/(const float & k) const {
 bool ComplexFloat::operator==(const ComplexFloat & x) const {
     return (real == x.real && imag == x.imag);
 }
+bool ComplexFloat::operator==(float x) const {
+    return (real == x && imag == 0.f);
+}
 bool ComplexFloat::operator!=(const ComplexFloat & x) const {
     return (real != x.real || imag != x.imag);
+}
+bool ComplexFloat::operator!=(float x) const {
+    return (real != x || imag != 0.f);
 }
 float ComplexFloat::abs() const {
     return std::sqrt(real*real + imag*imag);

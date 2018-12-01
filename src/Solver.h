@@ -8,24 +8,37 @@
 #include "header.h"
 #include "Map.h"
 #include "SolverPoint.h"
-#include "MatrixSystemOfEquations.h"
 #include "Complex2RealType.h"
 #include "ScaleType.h"
 #include "DimensionName.h"
+#include "JacobiSystemOfEquations.h"
 
 
 class Solver {
 
     constexpr static float _SOUND_SPEED = 340.f;
-    constexpr static float _DENSITY_OF_AIR = 1.225f;
-    constexpr static float _PLANE_WAVE_IMPEDANCE = _DENSITY_OF_AIR*_SOUND_SPEED;
+//    constexpr static float _DENSITY_OF_AIR = 1.225f;
+//    constexpr static float _PLANE_WAVE_IMPEDANCE = _DENSITY_OF_AIR*_SOUND_SPEED;
     constexpr static float _PI() { return float(std::atan(1)*4); };
-    constexpr static int _NUMBER_OF_POINTS_PER_PERIOD = 50;
+    constexpr static int _MINIMAL_NUMBER_OF_POINTS_PER_PERIOD = 8;
     constexpr static float _REFERENCE_PRESSURE = 0.00002f;
 
     constexpr static float _ARROW_SIZE = 0.03f;
-    constexpr static float _DOT_SIZE = 0.01f;
+    constexpr static float _DOT_SIZE = 0.06f;
 
+    constexpr static int _NUMBER_OF_THIRD_OCTAVE_BANDS = 45;
+    constexpr static float _THIRD_OCTAVE_BANDS[_NUMBER_OF_THIRD_OCTAVE_BANDS] =
+            {1, 1.25f, 1.6f, 2, 2.5f, 3.15f, 4, 5, 6.3f, 8,
+             10, 12.5f, 16, 20, 25, 31.5f, 40, 50, 63, 80,
+             100, 125, 160, 200, 250, 315, 400, 500, 630, 800,
+             1000, 1250, 1600, 2000, 2500, 3150, 4000, 5000, 6300, 8000,
+             10000, 12500, 16000, 20000, 25000};
+    constexpr static int _NUMBER_OF_OCTAVE_BANDS = 15;
+    constexpr static float _OCTAVE_BANDS[_NUMBER_OF_OCTAVE_BANDS] =
+            {1, 2, 4, 8, 16, 31.5f, 63, 125, 250, 500,
+             1000, 2000, 4000, 8000, 16000};
+
+    float _numberOfPointsPerPeriod;
     float _edgeLength;
     float _angularFrequency;
     float _waveLength;
@@ -39,18 +52,32 @@ class Solver {
     float _maxY;
     float _maxZ;
 
+    SolverPoint *** _grid;
+    bool *** _cubeMatrix;
+
 public:
     std::list<RenderTriangle> solveRoom(const Map & map, float frequency,
             Complex2RealType resultType, ScaleType scaleType);
+    void solveReceivers(const Map & map, float minFrequency, float maxFrequency);
 
 private:
     std::list<RenderTriangle> markAndCreateCubes(bool *** cubeMatrix, SolverPoint *** grid,
             const std::list<RenderTriangle> & trianglesToCube, TextureType textureID, bool isSource) const;
     std::list<glm::ivec3> findCubesOnLine(const glm::ivec3 & point1, const glm::ivec3 & point2) const;
-    MatrixSystemOfEquations createSystemOfEquations(SolverPoint *** grid) const;
-    int calculateVariableIndex(int i, int j, int k) const;
+    JacobiSystemOfEquations createSystemOfEquations(SolverPoint *** grid) const;
+    int calculateVariableIndex(int i, int j, int k, bool b) const;
     int pseudoSignum(float x) const;
     float max(float x, float y, float z) const;
+    void setBorder(JacobiSystemOfEquations & systemOfEquations, int actRealID, int actImagID,
+            int neiRealID, int neiImagID, float constant) const;
+    void setBorderX(JacobiSystemOfEquations & systemOfEquations, int actRealID, int actImagID,
+            int i, int j, int k) const;
+    void setBorderY(JacobiSystemOfEquations & systemOfEquations, int actRealID, int actImagID,
+                    int i, int j, int k) const;
+    void setBorderZ(JacobiSystemOfEquations & systemOfEquations, int actRealID, int actImagID,
+                    int i, int j, int k) const;
+    void createGrid(const Map & map, float frequency);
+    void deleteGrid() const;
 
 };
 

@@ -1,3 +1,0 @@
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/baronvladziu/Projects/Vulkan/FDM-3D/src/cmake-build-debug/CMakeFiles/vulkan-fdm.dir
