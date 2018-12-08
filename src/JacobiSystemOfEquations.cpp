@@ -43,7 +43,7 @@ void JacobiSystemOfEquations::solve() {
 //    std::ofstream myfile;
 //    myfile.open ("results.txt");
 //    JacobiMatrix prevSolution(1, _numberOfVariables);
-//    prevSolution.randomize();
+//    prevSolution.fillWithZeros();
 //    std::cout << "Iteration: 0" << std::endl;
 //    std::cout << "Result: " << std::endl;
 //    _solution.print();
@@ -52,10 +52,10 @@ void JacobiSystemOfEquations::solve() {
 //        prevSolution = _solution;
 //
 //        //Iterate
-//        std::cout << "Iteration: " << i << std::endl;
+//        std::cout << "Iteration: " << i << "/" << _numberOfVariables/2 << std::endl;
 //        _solution =  methodMatrix*_solution - constantMatrix;
-//        std::cout << "Result: " << std::endl;
-//        _solution.print();
+////        std::cout << "Result: " << std::endl;
+////        _solution.print();
 ////
 ////        //Print equations to file
 ////        for (int j = 0; j < _numberOfVariables; j++) {
@@ -63,7 +63,7 @@ void JacobiSystemOfEquations::solve() {
 ////        }
 ////        myfile << '\n';
 //        i++;
-//    } while (i < _MIN_ITERATION_NUMBER || !areSolutionsSimilar(prevSolution,  _solution, _SIMILARITY_THRESHOLD));
+//    } while (!areSolutionsSimilar(prevSolution,  _solution, _SIMILARITY_THRESHOLD) || i < _numberOfVariables/2);
 //    myfile.close();
 
 
@@ -101,7 +101,7 @@ bool JacobiSystemOfEquations::areSolutionsSimilar(const JacobiMatrix & v1, const
             std::isinf(v1.get(0, i)) || std::isinf(v1.get(0, i)) ||
             std::isinf(v2.get(0, i)) || std::isinf(v2.get(0, i))) {
             std::cout << "ERROR: Unstable solution! Consider raising _NUMBER_OF_POINTS_PER_PERIOD value." << std::endl;
-            return true;
+            return false;
         }
         float difference = v1.get(0, i) - v2.get(0, i);
         if (abs(difference) > similarityThreshold) {

@@ -12,7 +12,7 @@
 
 App::App() {
     srand(time(NULL));
-    std::string name("diffraction");
+    std::string name("freespace");
     MapLoader mapLoader;
     Map map = mapLoader.loadMap("../maps/" + name + "-w.json", "../maps/" + name + "-s.json", "../maps/" + name + "-r.json");
 
