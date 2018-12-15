@@ -360,7 +360,9 @@ void Matrix<T>::solve() {
             std::cout << "Failed to solve matrix properly!" << std::endl;
             return;
         }
-        std::cout << j + 1 << "/" << 2*_sizeY << std::endl;
+        if ((j + 1) % 100 == 0) {
+            std::cout << j + 1 << "/" << 2 * _sizeY << std::endl;
+        }
     }
     for (int j = _sizeY - 1; j >= 0; j--) {
         if (_values[j][j] != 0) {
@@ -369,7 +371,9 @@ void Matrix<T>::solve() {
                 subtractX(i, j, _values[j][i]);
             }
         }
-        std::cout << 2*_sizeY - j << "/" << 2*_sizeY << std::endl;
+        if ((2 * _sizeY - j) % 100 == 0) {
+            std::cout << 2 * _sizeY - j << "/" << 2 * _sizeY << std::endl;
+        }
     }
 }
 

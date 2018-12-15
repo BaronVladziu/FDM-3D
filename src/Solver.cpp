@@ -1184,8 +1184,9 @@ std::unique_ptr<std::list<RenderTriangle>> Solver::createSolutionTriangles(const
         std::cout << resultArray[i] << " \t";
     }
     std::cout << "\nMax result: " << maxResult << std::endl;
-    maxResult *= 1.01f; //To prevent blending with other textures
+    maxResult *= 1.02f; //To prevent blending with other textures
     std::cout << "Min result: " << minResult << std::endl;
+    minResult *= 1.01f; //To prevent blending with other textures
     std::cout << std::endl;
 
     //Create triangles

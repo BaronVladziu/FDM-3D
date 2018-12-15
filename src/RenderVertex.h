@@ -13,11 +13,12 @@ class RenderVertex {
     float _posX;
     float _posY;
     float _posZ;
-    float _texX;
-    float _texY;
+    float _texX = 0.5f;
+    float _texY = 0.5f;
 
 public:
     RenderVertex() = default;
+    explicit RenderVertex(glm::vec3 position);
     RenderVertex(glm::vec3 position, float textureX, float textureY);
     RenderVertex(float x, float y, float z, float textureX, float textureY);
     float getX() const;

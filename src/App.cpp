@@ -12,11 +12,11 @@
 
 App::App() {
     srand(time(NULL));
-    std::string name("freespace");
-    MapLoader mapLoader;
-    Map map = mapLoader.loadMap("../maps/" + name + "-w.json", "../maps/" + name + "-s.json", "../maps/" + name + "-r.json");
-
     SolverConfiguration config("../maps/config.json");
+    MapLoader mapLoader;
+    Map map = mapLoader.loadMap("../maps/" + config.MODEL_NAME + "-w.json", "../maps/" + config.MODEL_NAME + "-s.json", "../maps/" + config.MODEL_NAME + "-r.json");
+
+
 
     Solver solver;
     std::list<RenderTriangle> solverTriangles;

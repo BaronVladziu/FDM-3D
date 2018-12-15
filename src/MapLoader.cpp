@@ -6,7 +6,7 @@
 
 Map MapLoader::loadMap(const std::string & wallsJsonPath, const std::string & speakersJsonPath,
                        const std::string & receiversJsonPath) const {
-    std::cout << "--- PARSING JSON FILES ---" << std::endl;
+    std::cout << "\n --- PARSING MAP FILES ---" << std::endl;
     Map resultMap;
     Range3D ranges = loadWalls(resultMap, wallsJsonPath);
     ranges += loadSpeakers(resultMap, speakersJsonPath);
@@ -87,12 +87,6 @@ Range3D MapLoader::loadWalls(Map & resultMap, const std::string & wallsJsonPath)
                 else if (word == "\"z\":") {
                     state = WAITING_FOR_POINT_Z;
                 }
-                else if (word == "\"texX\":") {
-                    state = WAITING_FOR_POINT_TEX_X;
-                }
-                else if (word == "\"texY\":") {
-                    state = WAITING_FOR_POINT_TEX_Y;
-                }
                 else {
                     throw std::runtime_error(
                             "Error: While loading file " + wallsJsonPath + " , unknown point parameter: " + word +
@@ -134,24 +128,8 @@ Range3D MapLoader::loadWalls(Map & resultMap, const std::string & wallsJsonPath)
             }
             case WAITING_FOR_POINT_Z: {
                 std::string strValue = word;
-                strValue.pop_back();
                 float value = std::stof(strValue);
                 actVertex.setZ(value);
-                state = WAITING_FOR_ANOTHER_POINT_VALUE;
-                break;
-            }
-            case WAITING_FOR_POINT_TEX_X: {
-                std::string strValue = word;
-                strValue.pop_back();
-                float value = std::stof(strValue);
-                actVertex.setTexX(value);
-                state = WAITING_FOR_ANOTHER_POINT_VALUE;
-                break;
-            }
-            case WAITING_FOR_POINT_TEX_Y: {
-                std::string strValue = word;
-                float value = std::stof(strValue);
-                actVertex.setTexY(value);
                 vertices.push_back(actVertex);
                 state = WAITING_FOR_ANOTHER_POINT_VALUE;
                 break;
@@ -336,12 +314,6 @@ Range3D MapLoader::loadSpeakers(Map & resultMap, const std::string & speakersJso
                 else if (word == "\"z\":") {
                     state = WAITING_FOR_POINT_Z;
                 }
-                else if (word == "\"texX\":") {
-                    state = WAITING_FOR_POINT_TEX_X;
-                }
-                else if (word == "\"texY\":") {
-                    state = WAITING_FOR_POINT_TEX_Y;
-                }
                 else {
                     throw std::runtime_error(
                             "Error: While loading file " + speakersJsonPath + " , unknown point parameter: " + word +
@@ -383,24 +355,8 @@ Range3D MapLoader::loadSpeakers(Map & resultMap, const std::string & speakersJso
             }
             case WAITING_FOR_POINT_Z: {
                 std::string strValue = word;
-                strValue.pop_back();
                 float value = std::stof(strValue);
                 actVertex.setZ(value);
-                state = WAITING_FOR_ANOTHER_POINT_VALUE;
-                break;
-            }
-            case WAITING_FOR_POINT_TEX_X: {
-                std::string strValue = word;
-                strValue.pop_back();
-                float value = std::stof(strValue);
-                actVertex.setTexX(value);
-                state = WAITING_FOR_ANOTHER_POINT_VALUE;
-                break;
-            }
-            case WAITING_FOR_POINT_TEX_Y: {
-                std::string strValue = word;
-                float value = std::stof(strValue);
-                actVertex.setTexY(value);
                 vertices.push_back(actVertex);
                 state = WAITING_FOR_ANOTHER_POINT_VALUE;
                 break;
@@ -635,7 +591,6 @@ Range3D MapLoader::loadReceivers(Map & resultMap, const std::string & receiversJ
             }
             case WAITING_FOR_POINT_Z: {
                 std::string strValue = word;
-                strValue.pop_back();
                 float value = std::stof(strValue);
                 actVertex.setZ(value);
                 resultMap.addReceiver(actVertex);

@@ -5,6 +5,7 @@
 #include "SolverConfiguration.h"
 
 SolverConfiguration::SolverConfiguration(const std::string & configPath) {
+    std::cout << "--- PARSING CONFIG FILE ---" << std::endl;
     SolverConfigurationState state = WAITING_FOR_CONFIG_FILE_START;
     std::fstream file;
     file.open(configPath);
@@ -29,6 +30,8 @@ SolverConfiguration::SolverConfiguration(const std::string & configPath) {
                 if (word == "{") {}
                 else if (word == "}" || word == "},") {
                     state = WAITING_FOR_CONFIG_FILE_END;
+                } else if (word == "\"modelName\":") {
+                    state = WAITING_FOR_CONFIG_MODEL_NAME;
                 } else if (word == "\"minimalNumberOfPointsPerPeriod\":") {
                     state = WAITING_FOR_CONFIG_MINIMAL_NUMBER_OF_POINTS_PER_PERIOD;
                 } else if (word == "\"dotSize\":") {
@@ -48,6 +51,14 @@ SolverConfiguration::SolverConfiguration(const std::string & configPath) {
                             "Error: While loading file " + configPath + " , unknown point parameter: " + word +
                             " !");
                 }
+                break;
+            }
+            case WAITING_FOR_CONFIG_MODEL_NAME: {
+                std::string strValue = word;
+                strValue.pop_back();
+                strValue.pop_back();
+                MODEL_NAME = strValue.substr(1, strValue.size() - 1);
+                state = WAITING_FOR_CONFIG_ANOTHER_VALUE;
                 break;
             }
             case WAITING_FOR_CONFIG_MINIMAL_NUMBER_OF_POINTS_PER_PERIOD: {
@@ -96,14 +107,16 @@ SolverConfiguration::SolverConfiguration(const std::string & configPath) {
                 if (strValue == "\"real\"") COMPLEX_TYPE = Complex2RealType::REAL;
                 else if (strValue == "\"imag\"") COMPLEX_TYPE = Complex2RealType::IMAG;
                 else if (strValue == "\"abs\"") COMPLEX_TYPE = Complex2RealType::ABS;
+                else throw std::runtime_error("Error: While loading file " + configPath + " , unknown complexType!");
                 state = WAITING_FOR_CONFIG_ANOTHER_VALUE;
                 break;
             }
             case WAITING_FOR_CONFIG_SCALE_TYPE: {
                 std::string strValue = word;
                 strValue.pop_back();
-                if (strValue == "\"linear\"") SCALE_TYPE = ScaleType::LINEAR;
-                else if (strValue == "\"decibels\"") SCALE_TYPE = ScaleType::DECIBELS;
+                if (strValue == "\"linear") SCALE_TYPE = ScaleType::LINEAR;
+                else if (strValue == "\"decibels") SCALE_TYPE = ScaleType::DECIBELS;
+                else throw std::runtime_error("Error: While loading file " + configPath + " , unknown scaleType!");
                 state = WAITING_FOR_CONFIG_ANOTHER_VALUE;
                 break;
             }
@@ -118,4 +131,5 @@ SolverConfiguration::SolverConfiguration(const std::string & configPath) {
         }
     }
     file.close();
+    std::cout << "Model name: " << MODEL_NAME << std::endl;
 }

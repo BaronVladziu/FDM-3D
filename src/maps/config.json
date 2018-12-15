@@ -1,10 +1,11 @@
 {
   "config": {
-    "minimalNumberOfPointsPerPeriod": 7,
-    "dotSize": 0.05,
+    "modelName": "diffraction",
+    "minimalNumberOfPointsPerPeriod": 9,
+    "dotSize": 0.03,
     "startFrequency": 0,
     "endFrequency": 0,
-    "mainFrequency": 200,
+    "mainFrequency": 100,
     "complexType": "imag",
     "scaleType": "linear"
   }
