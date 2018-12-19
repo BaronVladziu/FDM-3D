@@ -452,7 +452,7 @@ Range3D MapLoader::loadSpeakers(Map & resultMap, const std::string & speakersJso
             case WAITING_FOR_SPEAKER_VOLUME_R: {
                 std::string strValue = word;
                 float value = std::stof(strValue);
-                volume.imag = value;
+                volume.real = value;
                 state = WAITING_FOR_ANOTHER_TRIANGLE_VALUE;
                 break;
             }

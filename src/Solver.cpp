@@ -42,6 +42,18 @@ std::unique_ptr<std::list<RenderTriangle>> Solver::solveRoom(const Map & map, co
     JacobiSystemOfEquations equations = createSystemOfEquations(_grid);
     equations.solve();
 
+    //--- SAVE RESULTS ---//
+    std::ofstream myfile;
+    myfile.open("results.txt");
+    for (int i = 0; i < equations.getNumberOfVariables(); i+=2) {
+        int z = i/2/(_pointMatrixSizeX + 1)/(_pointMatrixSizeY + 1);
+        int y = i/2/(_pointMatrixSizeX + 1)%(_pointMatrixSizeY + 1);
+        int x = i/2%(_pointMatrixSizeX + 1);
+        myfile << '(' << _minX + x*_edgeLength << '|' << _minY + y*_edgeLength << '|' << _minZ + z*_edgeLength << ')'
+                << " = "<< equations.getSolution(i) << '+' << equations.getSolution(i+1) << 'i' << '\n';
+    }
+    myfile.close();
+
     deleteGrid();
 
     return createSolutionTriangles(equations, config, wallTriangles, speakerTriangles);
@@ -1032,7 +1044,7 @@ void Solver::createGrid(const Map & map, float frequency, int minNumberOfPointsP
     //--- CREATE GRID ---//
     //Calculate constants
     _numberOfPointsPerPeriod = minNumberOfPointsPerPeriod - 1;
-    const int MIN_GRID_SIZE = 3;
+    const int MIN_GRID_SIZE = 4;
     do {
         _numberOfPointsPerPeriod++;
         _edgeLength = _SOUND_SPEED / (_numberOfPointsPerPeriod * frequency);

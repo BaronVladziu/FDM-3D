@@ -1,12 +1,12 @@
 {
   "config": {
-    "modelName": "diffraction",
+    "modelName": "scene",
     "minimalNumberOfPointsPerPeriod": 9,
     "dotSize": 0.03,
     "startFrequency": 0,
     "endFrequency": 0,
-    "mainFrequency": 100,
-    "complexType": "imag",
-    "scaleType": "linear"
+    "mainFrequency": 400,
+    "complexType": "real",
+    "scaleType": "decibels"
   }
 }
