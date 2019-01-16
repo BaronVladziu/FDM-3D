@@ -1,11 +1,11 @@
 {
   "config": {
-    "modelName": "scene",
+    "modelName": "closedroom",
     "minimalNumberOfPointsPerPeriod": 9,
-    "dotSize": 0.03,
+    "dotSize": 0.05,
     "startFrequency": 0,
     "endFrequency": 0,
-    "mainFrequency": 400,
+    "mainFrequency": 150,
     "complexType": "real",
     "scaleType": "decibels"
   }
